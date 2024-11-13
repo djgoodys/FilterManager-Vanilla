@@ -1,0 +1,77 @@
+<?php
+header("Cache-Control: no-cache, must-revalidate"); //HTTP 1.1
+header("Pragma: no-cache"); //HTTP 1.0
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+header("Cache-Control: max-age=2592000"); //30days (60sec * 60min * 24hours * 30days)
+
+?>
+<html>
+  <head>
+    <title>Filter Manager by DJ</title>
+    <script defer>
+// Listen for the message from the iframe
+window.addEventListener("message", (event) => {
+    //console.log("starting eventlister"+event.message);
+    if (event.data.action== "resetBackGroundColor") {
+      
+    }
+  if (event.data.id === "iframe2") {
+    // console.log("top="+event.data.top+" height="+event.data.height+" id="+event.data.id +" action="+event.data.action);
+    targetIframe = document.getElementById("iframe2"); 
+    targetIframe.style.height = event.data.height;
+    targetIframe.style.marginTop = event.data.top;
+  }
+
+  if (event.data.id === "iframe1") {
+     //console.log("top="+event.data.top+" height="+event.data.height+" id="+event.data.id +" action="+event.data.action);
+    targetIframe = document.getElementById("iframe1"); 
+    targetIframe.style.height = event.data.height ;
+    targetIframe.style.marginTop = event.data.top;
+  }
+
+  //console.log(event.data);
+
+  if (event.data.action === "reload-iframe1") {
+    const iframe1 = document.getElementById('iframe1');
+    iframe1.contentWindow.postMessage({action:'reload-iframe1', 'size': event.data.size}, '*');
+
+  }
+});
+</script>
+    <script type="text/javascript">
+      function whatmachine() {
+        const userAgent = navigator.userAgent.toLowerCase();
+
+        var isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+          );
+        if (isMobile) {
+          //alert("mobile device");
+          document.cookie = "machine=mobile";
+          //.getElementById("iframe1").height ="10";
+        } else {
+          document.cookie = "machine=desktop";
+          //document.getElementById("iframe1").height ="10";
+        }
+      }
+    </script>
+  </head>
+  <body style="position: relative;">
+  <iframe
+    id="iframe1"
+    name="Iframe1"
+    src="web_login3.php"
+    title=""
+    style="height: 20%; width: 100%;overflow-y:auto"
+    scrolling="no"
+  ></iframe>
+  <iframe
+    id="iframe2"
+    name="Iframe2"
+    src="ad.php"
+    title=""
+    style="height: 80%; width: 100%;overflow-y:hidden"
+  ></iframe>
+  </body>
+</html>

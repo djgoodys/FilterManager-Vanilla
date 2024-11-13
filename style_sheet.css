@@ -1,0 +1,499 @@
+<style >
+/* Popup container */
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+    /* Popup arrow */
+    .popup .popuptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+.popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.myoption {
+    background-color: #cc0000;
+    font-weight: bold;
+    font-size: <?php echo $FontSize ?>px;
+    color: white;
+    height: 40px;
+    width: 1px;
+    background-color: #4CAF50;
+}
+
+.myselect {
+    font-size: <?php echo $FontSize ?>px;
+    color: black;
+    background-color: #07ff10;
+    height: 50px;
+    width: 300px;
+    font-weight: bold;
+}
+
+<?php
+if(strcmp($Theme,"Dark-tdPlain")==0) {
+    echo "body {background-color: black;}";
+    $TDstyle="Dark-tdPlain";
+    $Theme="Dark-tdPlain";
+    $bgColor="black";
+}
+
+if(strcmp($Theme,"Light-tdPlain")==0) {
+    echo "body {background-color: white;}";
+    $TDstyle="Light-tdPlain";
+    $Theme="Light-tdPlain";
+    $bgColor="white";
+}
+?>
+
+textarea {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12px;
+}
+
+.Dark-tdOverDue {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    font-size: <?php echo $FontSize ?>px;
+    text-align: center;
+    padding: 2px;
+    white-space: nowrap;
+}
+
+.Dark-tdPlain {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    font-size: <?php echo $FontSize ?>px;
+    text-align: center;
+    black;
+    padding: 2px;
+    white-space: nowrap;
+}
+
+.Light-tdOverDue {
+    background-color: white;
+    vertical-align: middle;
+    color: red;
+    font-weight: bold;
+    font-size: <?php echo $FontSize ?>px;
+    text-align: center;
+    padding: 2px;
+    white-space: nowrap;
+}
+
+.Light-Plain {
+    tr .hover
+
+{
+    background-color: #FFD700;
+}
+
+}
+
+.Light-tdPlain {
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    font-size: <?php echo $FontSize ?>px;
+    text-align: center;
+    black;
+    padding: 2px;
+    white-space: nowrap;
+}
+
+.Light-tdPlain-outofstock {
+    background-color: orange;
+    color: black;
+    font-weight: bold;
+    font-size: <?php echo $FontSize ?>px;
+    text-align: center;
+    black;
+    padding: 2px;
+    white-space: nowrap;
+}
+
+.Light-tdPlain-outofstock-overdue {
+    background-color: orange;
+    color: red;
+    font-weight: bold;
+    font-size: <?php echo $FontSize ?>px;
+    text-align: center;
+    black;
+    padding: 2px;
+    white-space: nowrap;
+}
+
+
+/* Hide the browser's default checkbox */
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px,5px,5px,5px;
+    position: relative;
+}
+<script >
+function readCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0;
+    i <ca.length;
+    i ++)
+
+{
+    let c = ca[i];
+    while (c.charAt(0) == ' ')
+
+{
+    c = c.substring(1);
+}
+
+if (c.indexOf(name) == 0) {
+    alert(c.substring(name.length, c.length));
+    return c.substring(name.length, c.length);
+}
+
+}
+return "";
+}
+
+</script >
+<?php
+//echo "<font color='black'>theme=".$Theme;
+if(strcmp($Theme,"Dark-tdPlain")==0) {
+    echo "a:link {color:white;}";
+    echo "a:visited {color:white;}"; /* visited link */
+    echo "a:hover {color:#0eff05;}"; /* mouse over link */
+    echo "a:active {color:#45fc03}";
+    $TDstyle="Dark-tdPlain";
+}
+
+if(strcmp($Theme,"Light-tdPlain")==0) {
+    echo "a:link {color:black;}";
+    echo "a:visited {color:black;}"; /* visited link */
+    echo "a:hover {color:#0eff05;}"; /* mouse over link */
+    echo "a:active {color:#fe0000}";
+    $TDstyle="Light-tdPlain";
+}
+
+if(strcmp($_POST["ckoverdue"], "checked")==0) {
+    if(strcmp($Theme,"Dark-tdPlain")==0)
+
+{
+    echo "a:link {color:red;}";
+    echo "a:visited {color:red;}"; /* visited link */
+    echo "a:hover {color:#0eff05;}"; /* mouse over link */
+    echo "a:active {color:#45fc03;}";
+}
+
+if(strcmp($Theme,"Light-tdPlain")==0) {
+    echo "a:link {color:white;}";
+    echo "a:visited {color:white;}"; /* visited link */
+    echo "a:hover {color:#0eff05;}"; /* mouse over link */
+    echo "a:active {color:#fe0000}";
+}
+
+}
+
+?>
+
+</style >
+<style >
+
+.mytextarea {
+    background-color: black;
+    color: white;
+    font-size: 18px;
+    cols;
+    9;
+    rows;
+    6 width:140px;
+    height: 100px;
+}
+
+.unitInfo {
+    display: none;
+    background-color: gold;
+}
+
+.myFont {
+    font-size: <?php echo $FontSize ?>px;
+    )
+}
+
+optgroup {
+    font-size: 18px;
+}
+
+input[type="text"] {
+    background-color: black;
+    color: white;
+    font-size: 18px;
+    padding-right: 5px;
+    padding-left: 5px;
+    height: 60px;
+    width: 100px;
+}
+
+.tdUnitInfo {
+    padding: 0px;
+    height: 10px;
+    background-color: blue;
+    color: white;
+    "
+}
+
+.tdUnitInfo2 {
+    padding: 0px;
+    height: 10px;
+    background-color: black;
+    color: white;
+    "
+}
+
+.super-centered {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    vertical-align: middle;
+    z-index: 9999;
+}
+
+.myButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    font-size: 40px;
+    padding: 1px 1px;
+    text-align: left;
+    text-decoration: none;
+    display: inline-block;
+    width: 300px;
+    height: 120px;
+    border-radius: 30px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#submittasks {
+    width: 20em;
+    height: 2em;
+}
+
+#myInput {
+    background-position: 10px 12px; /* Position the search icon */
+    background-repeat: no-repeat; /* Do not repeat the icon image */
+    width: 100%; /* Full-width */
+    font-size: 16px; /* Increase font-size */
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+}
+
+#myTable {
+    border-collapse: collapse; /* Collapse borders */
+    width: 100%; /* Full-width */
+    border: 1px solid #ddd; /* Add a grey border */
+    font-size: 32px; /* Increase font-size */
+}
+
+    #myTable th {
+        background-color: black;
+        color: white;
+        align: center;
+        font-size: <?php echo $FontSize ?>px;
+    }
+
+    #myTable td {
+        text-align: left; /* Left-align text */
+        vertical-align: middle;
+        padding: 2px; /* Add padding */
+        font-size: <?php echo $FontSize ?>px;
+    }
+
+    #myTable tr {
+        border-bottom: 1px solid #ddd;
+        font-size: <?php echo $FontSize ?>px;
+    }
+
+
+    #myTable tr, tr:hover {
+        /* Add a grey background color to the table header and on hover */
+        background-color: #FFD700;
+    }
+
+</style >
+<STYLE > A {
+    text-decoration: none;
+}
+
+</STYLE >
+<?php
+if (isset($_COOKIE["username"])) {
+    $UserName = $_COOKIE["username"];
+}
+
+if (isset($_GET["username"])) {
+    $UserName = $_GET["username"];
+    //ECHO "_get username=". $_GET["username"];
+}
+
+if (isset($_POST["username"])) {
+    $UserName = $_POST["username"];
+    //ECHO "POST username=". $_POST["username"];
+}
+
+if (isset($_COOKIE["ckoverdue"])) {
+    //$overdue = $_COOKIE["ckoverdue"];
+    //echo "cookie overdue=".$overdue;
+}
+
+
+//----------------------FONT SIZE-------------
+if(isset($_COOKIE["FontSize"])) {
+    $FontSize=$_COOKIE["FontSize"];
+}
+
+if(!isset($_COOKIE["FontSize"]) && !isset($_POST["fontsize"])) {
+    $FontSize="10";
+}
+
+if(isset($_POST["fontsize"])) {
+    $FontSize=$_POST["fontsize"];
+    setcookie("FontSize", $FontSize, time() + (86400 * 30), "/");
+    // 86400 = 1 day
+}
+
+if (isset($_POST["theme"])) {
+    if(strcmp($_POST["theme"], "select_theme")!=0)
+
+{
+    $Theme = $_POST["theme"];
+if(strcmp($Theme,"select_theme")==0)
+{
+    $Theme="location";
+}
+
+setcookie("theme", $Theme, time() + (86400 * 30 * 30), "/");
+//echo "<font color='black'>post theme=".$Theme;
+}
+}
+
+if(strcmp($Theme,"none")==0) {
+    $TDstyle = "Light-tdPlain";
+    $Theme="Light-tdPlain";
+}
+
+//echo "theme=".$Theme."<br>";
+//if(strcmp($TDstyle,$FontSize)="30";
+if (isset($_COOKIE["fontsize"])) {
+    $FontSize = $_COOKIE["fontsize"];
+}
+
+if(isset($_POST["fontsize"])) {
+    $FontSize=$_POST["fontsize"];
+    setcookie("fontsize", $FontSize, time() + (86400 * 30 * 30), "/");
+}
+
+if(strcmp($FontSize, "")==0) {
+    $FontSize = "14px";
+}
+
+$Action="";
+if(isset($_POST["action"])) {
+    $Action=$_POST["action"];
+}
+
+$ShowOverDue="";
+$overdue="";
+
+if (isset($_COOKIE['ckoverdue'])) {
+    // $overdue=htmlspecialchars($_COOKIE["ckoverdue"]);
+    //echo "COOKIE ckoverdue=".$overdue;
+}
+
+else {
+    //echo "Post ckoverdue=".$overdue="true"."<br>";
+    //$overdue="false";
+}
+
+if(isset($_POST['ckoverdue'])) {
+    if($_POST['ckoverdue'] == "on")
+
+{
+    $ShowOverDue="checked";
+}
+
+}
+?>
+<html>
+<body onload="readcookie('theme');">
+

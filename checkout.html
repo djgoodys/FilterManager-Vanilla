@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FilterManager.net checkout</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+    .popup {
+  position: fixed; /* Ensures the popup stays in place when the page is scrolled */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Positions the popup in the center of the screen */
+  /* Adjust width and height as needed */
+  width: 400px;
+  height: 300px;
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); /* Optional: Adds a slight shadow for depth */
+  padding: 20px; /* Adjust padding as needed */
+  z-index: 100; /* Ensures the popup is displayed on top of other elements */
+}
+
+    </style>
+  </head>
+  <body style="background-color: black">
+    <table style="width: 60%;margin-left: auto;margin-right: auto;margin-top:100px;margin-bottom: 10px;">
+      <tr>
+        <td
+          style="
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: #5ff707;
+            color: black;
+            width: 59%;
+            font-family: Monospace;
+            border-radius: 1%;
+            margin-left: 0px;
+            padding: 5px;
+          "
+        >
+          FilterManager.net FREE 180 day trial. Cancel anytime. Click the paypal option
+          below to get started. You will not be charged anything during your
+          free trial. Do nothing and your automatic billing begin at the end of your 180 day trial.
+        </td>
+        <td>
+          <img
+            src="images/ad1.jpg"
+            style="margin-left: 15px; width: 280px; height: auto;border-radius: 5%;"
+            alt="Filter Manager Free Trial"
+          />
+        </td>
+      </tr>
+    </table>
+<div id="paypal-button-container-P-7W378705T4490240HMYJRWXI"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AWCCQWEDB2cp0ErTnOI17ws-ts8rLc89X1Y86KKxnFwIvZnVr4lKKMP0bB_Vld1qBLnVe3cZtcQzRoUs&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'pill',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          /* Creates the subscription */
+          plan_id: 'P-7W378705T4490240HMYJRWXI'
+        });
+      },
+      onApprove: function(data, actions) {
+        var subscriptionId = data.subscriptionID;
+        ShowPopUp(data.subscriptionID);
+      }
+  }).render('#paypal-button-container-P-7W378705T4490240HMYJRWXI'); // Renders the PayPal button
+</script>
+</head>
+<body>
+<div id="popup" style="display:none;" class="popup">
+  <div id="popup-content">
+    <p>This is your subscription ID. Please write it down for future reference:</p>
+    <p id="subscription-id"><b>Subscription ID: </b><span id="sub-id-value"></span></p>
+    <p><button id="copy-button">Copy to clipboard</button></p>
+    <p>Do not leave this page. Will be redirecting to your app setup after count down.</p>
+    <p id="countdown">20</p>
+  </div>
+</div>
+
+<script>
+  function ShowPopUp(subscriptionId){
+  const countdownElement = document.getElementById('countdown');
+  const subIdValueElement = document.getElementById('sub-id-value');
+  document.getElementById("popup").style.display="flex";
+  subIdValueElement.textContent = subscriptionId; // Set subscription ID
+
+  let timeLeft = 20;
+
+  const countdown = setInterval(() => {
+    countdownElement.textContent = timeLeft;
+    timeLeft--;
+
+    if (timeLeft === 0) {
+      clearInterval(countdown);
+      window.location.href = `../../cust_signup.php?subscription_id=${subscriptionId}`;
+    }
+  }, 1000); // Update countdown every second
+}
+</script>
+<script>
+
+function copyToClipboard() {
+  // Modern browsers using Clipboard API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(document.getElementById("sub-id-value").innerText)
+      .then(() => {
+        console.log('Subscription ID copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+  } else {
+    // Fallback for older browsers: create a temporary text area
+    const textArea = document.createElement('textarea');
+    textArea.value = subscriptionId;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    console.log('Subscription ID copied to clipboard (fallback method)');
+  }
+}
+const copyButton = document.getElementById('copy-button'); // Assuming there's a button with this ID
+copyButton.addEventListener('click', copyToClipboard);
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+

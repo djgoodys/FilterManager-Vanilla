@@ -1,0 +1,379 @@
+<?php 
+//print_r($_SESSION);
+$FontFamily = "Arial";
+if(isset($_SESSION["font_family"]))
+   { 
+      $FontFamily = $_SESSION["font_family"];
+   }
+
+$Theme = "Light-tdPlain";
+ if(isset($_SESSION["theme"]))
+   { 
+      $Theme = $_SESSION["theme"];
+   }
+
+if($Theme == "Dark-tdPlain")
+   {
+        $BackGroundColor = "black";
+        $FontColor = "#eeeee4";
+       // echo "BackGroundColor=".$BackGroundColor;
+        } 
+      else
+      {
+        $BackGroundColor = "#eeeee4";
+        $FontColor = "black";
+       // echo "<br>"."FontColor=".$FontColor;
+        } 
+        $FontSize = "20";
+        if(isset($_SESSION["font_size"] )) 
+        {
+         $FontSize = $_SESSION["font_size"];
+        }
+      
+//echo "font family=".$_SESSION["font_family"]." background color= ". $BackGroundColor. " theme= ".$Theme;
+//echo "font size=".$FontSize;
+?>
+
+<style>
+/* Hide the browser's default checkbox */
+::target-text {
+  font-family: <?php echo $FontFamily ?>;
+font-size: <?php echo $FontSize ?>px;
+}
+html {
+font-family: <?php echo $FontFamily ?>;
+font-size: <?php echo $FontSize ?>px;
+}
+
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+/* Create a custom checkbox */
+.checkmark {
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+   display: inline-block;
+  vertical-align: top;
+  padding: 5px,5px,5px,5px;
+  text-align:center;
+
+}    
+
+
+*{
+font-family: <?php echo $FontFamily ?>;
+font-size: <?php echo $FontSize ?>px;
+}
+/*for Web_update_filters.php */
+.FiltersNeeded {
+text-align:center;
+color:<?php echo $FontColor ?>;
+}
+.FiltersNeeded_Amount {
+text-align:center;
+color:<?php echo $FontColor ?>;
+width:5px;
+}
+/*for ListEquipment.php */
+.tdUnitInfo{
+   padding:0px; 
+   height:10px; 
+   background-color:green; 
+   color:white;
+text-align:right;
+   }
+
+.tdUnitInfo2{
+   padding:0px; 
+   height:10px; 
+   background-color:black; 
+   color:#32a852;
+  text-align:left;
+   }
+input[type="hidden"] {
+    display: none;
+}
+   body
+   {
+      background-color:<?php echo $BackGroundColor ?>;
+      color:<?php echo $FontColor ?>;
+   }
+  .Color-Light{
+background-color:#eeeee4";
+  }
+  .Color-Dark{
+background-color:black";
+  }
+
+.Light-tdPlain{
+color:purple;
+}
+   /* The switch - the box around the slider */
+.switch {
+   position: relative;
+z-index:1;
+   display: inline-block;
+   width: 60px;
+   height: 34px;
+ }
+ 
+ /* Hide default HTML checkbox */
+ .switch input {
+   opacity: 0;
+   width: 0;
+   height: 0;
+ }
+ 
+ /* The slider */
+ .slider {
+   position: absolute;
+z-index:1;
+   cursor: pointer;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: #ccc;
+   -webkit-transition: .4s;
+   transition: .4s;
+ }
+ 
+ .slider:before {
+   position: absolute;
+z-index:1;
+   content: "";
+   height: 26px;
+   width: 26px;
+   left: 4px;
+   bottom: 4px;
+   background-color: white;
+   -webkit-transition: .4s;
+   transition: .4s;
+ }
+ 
+ input:checked + .slider {
+   background-color: #07ff10;
+ }
+ 
+ input:focus + .slider {
+   box-shadow: 0 0 1px #2196F3;
+ }
+ 
+ input:checked + .slider:before {
+   -webkit-transform: translateX(26px);
+   -ms-transform: translateX(26px);
+   transform: translateX(26px);
+ }
+ 
+ /* Rounded sliders */
+ .slider.round {
+   border-radius: 34px;
+z-index: -1;
+ }
+ 
+ .slider.round:before {
+   border-radius: 50%;
+z-index: -1;
+ }
+   .users-style {
+      font-size:<?php echo $FontSize ?>px;
+      font-family:<?php echo $FontFamily ?>;
+      /*background-color:<?php echo $BackGroundColor ?>;
+      color:<?php echo $FontColor ?>*/
+   }
+   
+   .EditRow {
+      background-color:#32a852;
+      width:100%;
+      font-size: <?php echo $FontSize ?>px;
+      font-family: <?php echo $FontFamily ?>;
+      color: #9CCC65;
+   }
+.EditRow tr{
+width:100%;
+}
+/* web_update_filter.php */
+.EditRow div{
+background-color: #857a7a;
+}
+
+/* web_update_filter.php */
+#FilterRowTextArea{
+overflow: auto;
+max-width:200px;
+max-height:80;
+flex-shrink: 2;
+
+font-size: min(max(6px, 2vw), 12px);
+-webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+
+
+scrollbar-width: thin;
+}
+.DisplayNone{
+display:none;
+}
+/* web_update_filter.php */
+   .TextAreaFilters{
+  height: 20vh;
+  width: 8vw;
+  position:relative;
+  background-color:  white;
+  color:blueviolet;
+  font-weight: bold;
+  font-family: <?php echo $FontFamily ?>;
+  font-size: min(max(6px, 2vw), 12px);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  overflow:auto;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+   }
+   /* web_update_filter.php */
+   .FilterRow {
+      font-size: <?php echo $FontSize ?>px;
+      font-family: <?php echo $FontFamily ?>;
+ background-color:<?php echo $BackGroundColor ?>;
+      min-width: 150px;
+      background-color:<?php echo $BackGroundColor ?>;
+      color:<?php echo $FontColor ?>;
+      margin-left: auto;
+      margin-right: auto;
+   }
+/* web_update_filter.php */
+  .FilterRow div {
+    font-family: <?php echo $FontFamily ?>;
+font-size: <?php echo $FontSize ?>px;
+background-color:transparent;
+  }
+/* web_update_filter.php */
+.fselect {
+border-radius: 5px;
+}
+/* web_update_filter.php */
+.nonEditable {
+font-family: <?php echo $FontFamily ?>;
+font-size: <?php echo $FontSize ?>px;
+background-color:whitesmoke;
+border-radius: 5px;
+width:4em;
+color:aqua;
+}
+/* web_update_filter.php */
+   table.FilterRow tr:hover td {
+      background-color:rgb(188, 37, 173);
+      color:white;
+      } 
+
+a{
+    a:link {
+        color: green;
+        background-color: transparent;
+        text-decoration: none;
+      }
+      
+      a:visited {
+        color: pink;
+        background-color: transparent;
+        text-decoration: none;
+      }
+      
+      a:hover {
+        color: red;
+        background-color: transparent;
+        text-decoration: underline;
+      }
+      
+      a:active {
+        color: yellow;
+        background-color: transparent;
+        text-decoration: underline;
+      }
+    }
+.tableTasks{
+        width: 100%; /* Full-width */
+         border: none;
+margin-left:20px;
+margin-right:20px;
+
+}
+/* .ftype and .selectWrapper FOR webTasks.php select box*/
+.ftype{
+background-color: #32a852;
+color:white;
+  width:120px;
+  height:30px;
+  border:0px;
+  outline:none;
+}
+.selectWrapper{
+  border-radius:5px;
+  display:inline-block;
+  overflow:hidden;
+  background:#cccccc;
+  border:1px solid #cccccc;
+text-align: right;
+}
+    .TaskHistoryTable {
+          border-collapse: collapse;  
+         width: 100%; /* Full-width */
+         border: 1px solid #857a7a; /* Add a grey border */
+    }
+.TaskHistoryTable td {
+          padding: 150px;
+background-color: #07ff10;
+    }
+      .myTable {
+          border-collapse: collapse;  
+         width: 100%; /* Full-width */
+         border: 1px solid #857a7a; /* Add a grey border */
+
+         }
+        
+         .myTable th {
+           background-color:#07ff10;
+           color:white;
+           text-align:center;
+          font-size: <?php echo $FontSize ?>px;
+          font-family: <?php echo $FontFamily ?>;
+         }
+
+         .myTable td {
+         text-align: center; /* Left-align text */
+         vertical-align: middle;
+         padding: 2px; /* Add padding */
+         font-size: <?php echo $FontSize ?>px;
+          font-family: <?php echo $FontFamily ?>;
+         }
+         
+         .myTable tr{  
+         border-bottom: 1px solid #ddd;
+         font-size: <?php echo $FontSize ?>px;    
+         }
+
+
+         .editme {
+            text-align:center;
+            width:200px;"
+            background-color:blue;
+            height:60px;
+         }
+         .filter{
+            text-align:center;
+            width:200px;
+            background-color:orange; 
+         }
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
+
+</style>

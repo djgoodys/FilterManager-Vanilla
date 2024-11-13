@@ -1,0 +1,12 @@
+
+$jsonString = file_get_contents('table_users.json');
+$data = json_decode($jsonString, true);
+$newUser = array(
+    'name' => 'John Doe',
+    'email' => 'johndoe@example.com',
+    'age' => 30
+);
+$data[] = $newUser;
+$jsonString = json_encode($data, JSON_PRETTY_PRINT);
+file_put_contents('path/to/table_users.json', $jsonString);
+?>

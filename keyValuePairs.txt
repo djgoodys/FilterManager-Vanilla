@@ -1,0 +1,66 @@
+id: WH-19973937YW279670F-02S63370HL636500Y
+event_version: 1.0
+create_time: 2016-04-28T11:29:31Z
+resource_type: Agreement
+event_type: BILLING.SUBSCRIPTION.CREATED
+summary: A billing subscription was created
+resource.id: I-PE7JWXKGVN0R
+resource.shipping_address.recipient_name: Cool Buyer
+resource.shipping_address.line1: 3rd st
+resource.shipping_address.line2: cool
+resource.shipping_address.city: San Jose
+resource.shipping_address.state: CA
+resource.shipping_address.postal_code: 95112
+resource.shipping_address.country_code: US
+resource.plan.curr_code: USD
+resource.plan.payment_definitions.0.type: TRIAL
+resource.plan.payment_definitions.0.frequency: Month
+resource.plan.payment_definitions.0.frequency_interval: 1
+resource.plan.payment_definitions.0.amount.value: 5.00
+resource.plan.payment_definitions.0.cycles: 5
+resource.plan.payment_definitions.0.charge_models.0.type: TAX
+resource.plan.payment_definitions.0.charge_models.0.amount.value: 1.00
+resource.plan.payment_definitions.0.charge_models.1.type: SHIPPING
+resource.plan.payment_definitions.0.charge_models.1.amount.value: 1.00
+resource.plan.payment_definitions.1.type: REGULAR
+resource.plan.payment_definitions.1.frequency: Month
+resource.plan.payment_definitions.1.frequency_interval: 1
+resource.plan.payment_definitions.1.amount.value: 10.00
+resource.plan.payment_definitions.1.cycles: 15
+resource.plan.payment_definitions.1.charge_models.0.type: TAX
+resource.plan.payment_definitions.1.charge_models.0.amount.value: 2.00
+resource.plan.payment_definitions.1.charge_models.1.type: SHIPPING
+resource.plan.payment_definitions.1.charge_models.1.amount.value: 1.00
+resource.plan.merchant_preferences.setup_fee.value: 0.00
+resource.plan.merchant_preferences.auto_bill_amount: YES
+resource.plan.merchant_preferences.max_fail_attempts: 21
+resource.payer.payment_method: paypal
+resource.payer.status: verified
+resource.payer.payer_info.email: coolbuyer@example.com
+resource.payer.payer_info.first_name: Cool
+resource.payer.payer_info.last_name: Buyer
+resource.payer.payer_info.payer_id: XLHKRXRA4H7QY
+resource.payer.payer_info.shipping_address.recipient_name: Cool Buyer
+resource.payer.payer_info.shipping_address.line1: 3rd st
+resource.payer.payer_info.shipping_address.line2: cool
+resource.payer.payer_info.shipping_address.city: San Jose
+resource.payer.payer_info.shipping_address.state: CA
+resource.payer.payer_info.shipping_address.postal_code: 95112
+resource.payer.payer_info.shipping_address.country_code: US
+resource.agreement_details.outstanding_balance.value: 0.00
+resource.agreement_details.num_cycles_remaining: 5
+resource.agreement_details.num_cycles_completed: 0
+resource.agreement_details.final_payment_due_date: 2017-11-30T10:00:00Z
+resource.agreement_details.failed_payment_count: 0
+resource.description: desc
+resource.state: Pending
+resource.links.0.href: https://api.paypal.com/v1/payments/billing-agreements/I-PE7JWXKGVN0R
+resource.links.0.rel: self
+resource.links.0.method: GET
+resource.start_date: 2016-04-30T07:00:00Z
+links.0.href: https://api.paypal.com/v1/notifications/webhooks-events/WH-19973937YW279670F-02S63370HL636500Y
+links.0.rel: self
+links.0.method: GET
+links.1.href: https://api.paypal.com/v1/notifications/webhooks-events/WH-19973937YW279670F-02S63370HL636500Y/resend
+links.1.rel: resend
+links.1.method: POST

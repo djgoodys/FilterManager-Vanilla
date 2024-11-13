@@ -1,0 +1,26 @@
+$jsonString = file_get_contents('data.json');
+        $data = json_decode($jsonString, true);
+        foreach ($data['equipment'] as &$object) 
+{
+            if ($object['_id'] === '1') 
+		{
+                $object["unit_name"] = $UnitName;
+                $object["area_served"] = $AreaServed;
+                $object["filter_size"] = $FilterSize;
+                $object["filters_due"] = $FiltersDue;
+                $object["location"] = $_POST["location"];
+                $object["area_served"] = $AreaServed;
+                $object["filter_size"] = $FilterSize;
+                $object["filters_due"] = $FiltersDue;
+                $object["belts"] = $Belts;
+                $object["notes"] = $Notes;
+                $object["filter_rotation"] = $FilterRotation;
+                $object["filter_type"] = $FilterType;
+                $object["filters_last_changed"] = $FiltersLastChanged;
+                $object["assigned_to"] = $AssignedTo;
+                $object["image"] = $Image;
+            	}
+}
+$jsonString = json_encode($data, JSON_PRETTY_PRINT);
+file_put_contents('data.json', $jsonString);
+    

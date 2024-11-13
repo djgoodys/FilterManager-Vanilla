@@ -1,0 +1,12 @@
+{
+    "equipment": [],
+    "filters": [],
+    "storage": [],
+    "filter_orders": [],
+    "filter_types": [],
+    "misc": {
+        "checkout_session_id": "",
+        "trial_start_date": "2024-6-8",
+        "subscription_start_date": ""
+    }
+}

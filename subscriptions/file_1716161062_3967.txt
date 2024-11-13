@@ -1,0 +1,87 @@
+{
+  "id": "evt_3PIJ5OP3U9zm2mKu0fuDaHt5",
+  "object": "event",
+  "api_version": "2024-04-10",
+  "created": 1716161061,
+  "data": {
+    "object": {
+      "id": "pi_3PIJ5OP3U9zm2mKu0fjqhi0N",
+      "object": "payment_intent",
+      "amount": 2000,
+      "amount_capturable": 0,
+      "amount_details": {
+        "tip": {
+        }
+      },
+      "amount_received": 2000,
+      "application": null,
+      "application_fee_amount": null,
+      "automatic_payment_methods": null,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic",
+      "client_secret": "pi_3PIJ5OP3U9zm2mKu0fjqhi0N_secret_BhlMKuHyNI3yShhIUWRpNfpNc",
+      "confirmation_method": "automatic",
+      "created": 1716161054,
+      "currency": "usd",
+      "customer": "cus_PxKTtpfamZo3MC",
+      "description": "Subscription update",
+      "invoice": "in_1PII8IP3U9zm2mKuCv4C6sEs",
+      "last_payment_error": null,
+      "latest_charge": "py_3PIJ5OP3U9zm2mKu0MXyJtzC",
+      "livemode": false,
+      "metadata": {
+      },
+      "next_action": null,
+      "on_behalf_of": null,
+      "payment_method": "pm_1P7PowP3U9zm2mKuJz6C1w8S",
+      "payment_method_configuration_details": null,
+      "payment_method_options": {
+        "amazon_pay": {
+          "express_checkout_element_session_id": null
+        },
+        "card": {
+          "installments": null,
+          "mandate_options": null,
+          "network": null,
+          "request_three_d_secure": "automatic"
+        },
+        "cashapp": {
+        },
+        "link": {
+          "persistent_token": null
+        },
+        "us_bank_account": {
+          "mandate_options": {
+          },
+          "verification_method": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "amazon_pay",
+        "card",
+        "cashapp",
+        "link",
+        "us_bank_account"
+      ],
+      "processing": null,
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "succeeded",
+      "transfer_data": null,
+      "transfer_group": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": null,
+    "idempotency_key": "in_1PII8IP3U9zm2mKuCv4C6sEs-initial_attempt-dd4322cd9dcb6a8cb"
+  },
+  "type": "payment_intent.succeeded"
+}

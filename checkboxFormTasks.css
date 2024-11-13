@@ -1,0 +1,68 @@
+<style>
+  /* The container */
+.containerX {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 35px;
+  cursor: pointer;
+  font-size: 12px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.containerX input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmarkX {
+  position: static;
+  height: 30px;
+  width: 30px;
+  background-color: #40ff00;
+  border-radius: 5px;
+}
+
+/* On mouse-over, add a grey background color */
+.containerX:hover input ~ .checkmarkX {
+  background-color: #c72188;
+}
+
+/* When the checkbox is checked, add a blue background */
+.containerX input:checked ~ .checkmarkX {
+  background-color: white;
+}
+
+/* Create the checkmarkX/indicator (hidden when not checked) */
+.checkmarkX:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmarkX when checked */
+.containerX input:checked ~ .checkmarkX:after {
+  display: block;
+}
+
+/* Style the checkmarkX/indicator */
+.containerX .checkmarkX:after {
+  left: 9px;
+  top: 0px;
+  width: 15px;
+  height: 30px;
+  border: solid #54f542;
+  border-width: 0 6px 6px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+</style>

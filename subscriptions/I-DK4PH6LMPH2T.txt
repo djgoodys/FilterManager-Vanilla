@@ -1,0 +1,39 @@
+Subscription Id: I-DK4PH6LMPH2T
+status_change_note=This was only a Live test subscription.
+quantity=1
+given_name=Andrew
+surname=Briggs
+v3 email address is:abriggs250@gmail.com
+full_name=Andrew Briggs
+name=Array
+address_line_1=189 Canyon Crest Dr W
+admin_area_2=Twin Falls
+admin_area_1=ID
+postal_code=83301
+country_code=US
+address=Array
+v3 email address is:abriggs250@gmail.com
+subscriber: {"email_address":"abriggs250@gmail.com","payer_id":"ZSY4ZAEY8HVHU","name":{"given_name":"Andrew","surname":"Briggs"},"shipping_address":{"name":{"full_name":"Andrew Briggs"},"address":{"address_line_1":"189 Canyon Crest Dr W","admin_area_2":"Twin Falls","admin_area_1":"ID","postal_code":"83301","country_code":"US"}}}
+create_time=2024-04-09T05:00:11Z
+plan_overridden=
+shipping_amount: {"currency_code":"USD","value":"0.0"}
+start_time=2024-04-09T04:59:28Z
+update_time=2024-04-11T04:01:01Z
+currency_code=USD
+value=0.0
+email address is:Array
+currency_code=USD
+value=22.0
+amount=Array
+time=2024-04-10T10:43:10Z
+billing_info: {"outstanding_balance":{"currency_code":"USD","value":"0.0"},"cycle_executions":[{"tenure_type":"TRIAL","sequence":1,"cycles_completed":1,"cycles_remaining":0,"current_pricing_scheme_version":1,"total_cycles":1},{"tenure_type":"REGULAR","sequence":2,"cycles_completed":1,"cycles_remaining":0,"current_pricing_scheme_version":1,"total_cycles":0}],"last_payment":{"amount":{"currency_code":"USD","value":"22.0"},"time":"2024-04-10T10:43:10Z"},"failed_payments_count":0}
+href=https://api.paypal.com/v1/billing/subscriptions/I-DK4PH6LMPH2T
+rel=self
+method=GET
+encType=application/json
+v3 email address is:Array
+links: [{"href":"https:\/\/api.paypal.com\/v1\/billing\/subscriptions\/I-DK4PH6LMPH2T","rel":"self","method":"GET","encType":"application\/json"}]
+id=I-DK4PH6LMPH2T
+plan_id=P-7W378705T4490240HMYJRWXI
+status=CANCELLED
+status_update_time=2024-04-11T04:01:01Z

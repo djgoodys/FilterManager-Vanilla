@@ -1,0 +1,25 @@
+{
+  "name": "clgsru/composer-modify-autoload",
+  "type": "library",
+  "description": "Simple library for updated the vendor/autoload.php so it manually includes any files specified in composer.json's files array.",
+  "keywords": ["composer", "autoload"],
+  "license": "GPL-3.0-only",
+  "support": {
+    "issues": "https://github.com/clgsru/composer-modify-autoload/issues",
+    "source": "https://github.com/clgsru/composer-modify-autoload"
+  },
+  "authors": [
+    {
+      "name": "Alexander Arhitov",
+      "email": "clgsru@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "bin": [
+    "bin/composer-modify-autoload.php"
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

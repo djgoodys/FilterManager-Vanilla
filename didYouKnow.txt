@@ -1,0 +1,10 @@
+0 Did you know can get all of the a/c unit properties by clicking on its name
+1 Did you know can re-assign your task to someone else by clicking on your initials in the add tasks column 
+2 Did you know if you click the filter size on this page it will take you to that filters info in the filter inventory control panel
+3 Did you know you can easily change filter due date by clicking on the date in the Due date column
+4 Didy you know there are 2 ways to complete a task. 1)click the switch in filters done column 2)In your tasks page - click the green check mark in the Complete task column
+5 Did you know you can customize the 4rth and 5th rows of this page? <br>click on the drop down lists inside the <p style="background-color:#07ff10;width: 140px;text-align:center;height: 30px;border-radius:5%;color:black;">green header below</p>
+6 Did you know you can change your background color? Click on the settings icon above
+7 Did you know you can change your complany name displayed in filter orders? Click on the settings icon above
+8 Did you know you can change your font size? Click on the settings icon above
+9 Did you know you can do a data back up of all your data? Look in settings.

@@ -1,0 +1,155 @@
+﻿<?php
+//----------------------FONT SIZE-------------
+if(isset($_COOKIE["FontSize"]))
+   {  
+      $FontSize=$_COOKIE["FontSize"];
+   }
+if(!isset($_COOKIE["FontSize"]) && !isset($_POST["fontsize"]))
+   {  
+      $FontSize="10";
+   }
+if(isset($_POST["fontsize"]))
+   {
+      $FontSize=$_POST["fontsize"];
+      setcookie("FontSize", $FontSize, time() + (86400 * 30), "/"); // 86400 = 1 day
+   }
+   $Theme="none";
+
+if (isset($_COOKIE["theme"])) {
+    $Theme = $_COOKIE["theme"];
+    //echo "<font color='black'>cookie theme=".$Theme;
+}
+if (isset($_POST["theme"])) 
+{
+   if(strcmp($_POST["theme"], "select_theme")!=0)
+      {
+         $Theme = $_POST["theme"];
+         if(strcmp($Theme,"select_theme")==0){$Theme="location";}
+         
+         setcookie("theme", $Theme, time() + (86400 * 30 * 30), "/");
+         //echo "<font color='black'>post theme=".$Theme;
+      }
+}
+if (isset($_GET["theme"])) 
+{
+   if(strcmp($_GET["theme"], "select_theme")!=0)
+      {
+         $Theme = $_GET["theme"];
+         if(strcmp($Theme,"select_theme")==0){$Theme="location";}
+         
+         setcookie("theme", $Theme, time() + (86400 * 30 * 30), "/");
+         //echo "<font color='black'>post theme=".$Theme;
+      }
+}
+
+if(strcmp($Theme,"none")==0)
+{
+   $TDstyle = "Light-tdPlain";
+   $Theme="Light-tdPlain";
+}
+   ?>
+<div id="divUserName" class="panel-body" style="font-size:large;background-color:black;color:aliceblue;height:25px;"></div>
+<script>
+  function whatmachine(){
+          const userAgent = navigator.userAgent.toLowerCase();
+          var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+          if(isMobile){
+            document.getElementById("aAppVersion").href="index.html";
+            document.getElementById("appversion").innerHTML="Desk top version";
+            document.cookie =("machine=mobile");
+        }else{
+            document.getElementById("aAppVersion").href="mListEquipment.php";
+            document.getElementById("appversion").innerHTML="Mobile version";
+           document.cookie =("machine=desktop");
+        }
+     }
+    </script>
+<script>
+  function getCookieByName(cname) {
+
+ let name = cname + "=";
+ let decodedCookie = decodeURIComponent(document.cookie);
+ let ca = decodedCookie.split(';');
+ for(let i = 0; i <ca.length; i++) {
+   let c = ca[i];
+   while (c.charAt(0) == ' ') {
+     c = c.substring(1);
+   }
+   if (c.indexOf(name) == 0) {
+     return c.substring(name.length, c.length);
+   }
+ }
+ return "";
+}
+</script>
+<script>
+function ckIfLoggedIn()
+    {
+      var username = getCookieByName('username');
+      if (username.length === 0) 
+        {
+          document.location.href='mLogin.php';
+        }
+      else 
+      {
+        document.getElementById('divUserName').innerHTML= "Logged in as " + username;
+    }
+  }
+    </script>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">     <li class="nav-item dropdown">
+      <li class="nav-item">
+      <a class="navbar-brand" href="mListEquipment.php"><div style="font-size:<?php echo $FontSize ?>px;">Unit List</div></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="print.php"><div style="font-size:<?php echo $FontSize ?>px;">Print</div></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div style="font-size:<?php echo $FontSize ?>px;">Order by</div>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?bydate=newest"><div class="text-info">Newest to oldest</div></a></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?bydate=oldest"><div class="text-info">Oldest to newest</div></a></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?bydate=today"><div class="text-info">Due today</div></a></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>"><div class="text-info">Normal</div></a></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?ckoverdue=on"><div class="text-danger font-weight-bold">Over due only</div></a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div style="font-size:<?php echo $FontSize ?>px;">Settings</div
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <li><hr class="dropdown-divider"><p class="text-white bg-dark font-weight-bold">Theme</p></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?theme=Light-tdPlain"><div <?php if(strcmp($Theme, "Light-tdPlain")==0){echo "class='text-success font-weight-bold'";}else{echo "class='text-primary'";} ?>>Light</div></a></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?theme=Dark-tdPlain"><div <?php if(strcmp($Theme, "Dark-tdPlain")==0){echo "class='text-success font-weight-bold'";}else{echo "class='text-primary'";} ?>>Dark</div></a></li>
+          <li><hr class="dropdown-divider"><p class="text-white bg-dark font-weight-bold">Font size<p></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?fontsize=20"><div <?php if(strcmp($FontSize, "20")==0){echo "class='text-success font-weight-bold'";}else{echo "class='text-primary'";} ?>>Small</div></a></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?fontsize=30"><div <?php if(strcmp($FontSize, "30")==0){echo "class='text-success font-weight-bold'";}else{echo "class='text-primary'";} ?>>Medium</div></a></li>
+          <li><a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?fontsize=40"><div <?php if(strcmp($FontSize, "40")==0){echo "class='text-success font-weight-bold'";}else{echo "class='text-primary'";} ?>>Large</div></a></li>       
+        </li></ul>
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div style="font-size:<?php echo $FontSize ?>px;">Go to</div>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="mListEquipment.php"><div style="font-size:<?php echo $FontSize ?>px;" class="text-info">Unit list</div></a></li>   
+        <li><a class="dropdown-item" href="mWebTasks.php"><div style="font-size:<?php echo $FontSize ?>px;" class="text-info">Tasks</div></a></li>
+          <li><a class="dropdown-item" href="mweb_update_filters.php"><div style="font-size:<?php echo $FontSize ?>px;" class="text-info">Filters</div></a></li>
+          <li><a class="dropdown-item" href="webAddUnit.php"><div style="font-size:<?php echo $FontSize ?>px;" class="text-info">Add new unit</div></a></li>
+          <li><a class="dropdown-item" href="backuptocsv.php"><div style="font-size:<?php echo $FontSize ?>px;" class="text-info">Back up data</div></a></li>
+          <li><a class="dropdown-item" href="help.html"><div style="font-size:<?php echo $FontSize ?>px;" class="text-info">Help</div></a></li>
+          <li><a class="dropdown-item" href="index.html" id="aAppVersion"><div style="font-size:<?php echo $FontSize ?>px;" id="appversion" class="text-info">Desk top version
+            </div></a></li>
+          </li></ul>
+     
+      <li class="nav-item dropdown">
+      <li class="nav-item">
+        <div class="dropdown-item">
+  </div></li></ul></div> 
+</nav>

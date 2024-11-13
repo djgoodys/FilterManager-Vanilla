@@ -1,0 +1,95 @@
+<head>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<style>
+
+    li {
+        color: azure;
+        margin-left:30px ;
+    }
+    p {
+        color: #f0ffff;
+        margin-left:30px ;
+    }
+    h4{
+        font-weight: bold;
+        color:aliceblue;
+        font-size: medium;
+    }
+    table {
+        width: 80%;
+    }
+    .mytable {
+  border: 1px solid;
+  margin-left: 30px;
+  background-color: white;
+}
+td {
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid;
+  width: max-content;
+}
+.myButton {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  font-size:35px;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  width:230px; 
+  height:60px; 
+  border-radius: 30px;
+  }
+
+  h4 {
+    margin-left:30px ;
+  }
+</style>
+
+
+<body style="background-color: green;>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<h4>Tasks explained:</h4>
+  <br>
+  <p>The purpose of creating Tasks is to group units together. Advantages are: 
+  <li>Filter change for that unit is assigned in your name and so others can see this in the unit list.
+<li>You can print them out and carry information needed to change units like unit location, filter sizes etc..</li>
+  <p>Tasks can be used for 1 or more units at a time. 
+  <h4>Creating a tasks:</h4></p><h4>To add a unit to your tasks list check the box next to the unit name in the Unit List<br>
+    You can select as many as you want. Then click on the submit button. See illustration below.<br>
+    <img src="../images/help-add-task1.png" width="600px" height="400px"><br>
+    <br><h4>Viewing your task list:<br>
+    <h4>Click on the Tasks button on top to reveal your tasks. See example below.</h4>
+        <div style="background-color: green;width:250px;height:80px;padding: 5px;margin-left:30px ;"><a href="../WebTasks.php"><input type="button" class="myButton" value="Tasks"></a></div>
+    <h4>Tasks table example below:</h4>
+    
+    <table class="myTable">
+        <tr><td style='text-align:center;'>Cancel task</td><td style='text-align:center;' width='800'>Unit name</td><td  width='800' style='text-align:center;'>Unit location</td>
+        <td>Filter size</td>
+        <td>Filter type</td>
+        <td>Complete task</td>
+        </tr>
+        <tr><td><div style="width: 100%; height: 100%;text-align:center;"><img src="../images/cancel.jpg"></div></td></td><td >Air Handler #21</td><td>Mezz level door #2</td>
+        <td>24x24x2</td><td><div style="width: 100%; height: 100%;"><select  id="slctFilterType" name="filter_type" class="ftype"><option value="select" selected>Paper</option></td><td><img src="../images/dwcheckyes.png" style="text-align:center;width:30px;height:30px;"></td></td></tr>
+            <tr><td><div style="width: 100%; height: 100%;text-align:center;"><img src="../images/cancel.jpg"></div></td></td><td >A/C #1b</td><td>Roof of building 2</td>
+                <td>14x12x1</td><td><div style="width: 100%; height: 100%;"><select  id="slctFilterType" name="filter_type" class="ftype"><option value="select" selected>Plastic</option></td><td><img src="../images/dwcheckyes.png" style="text-align:center;width:30px;height:30px;"></td></td></tr>
+                  </div><tr><td></td><td></td><td></td><td></td><td></td><td><button disabled id='btnCompleteAllTasks' title="Select all filters used above before clicking" disabled>Complete All Tasks</button><td></tr>
+                    <tr><td>
+                    <td align='center'>
+                    </td><td></td>
+                    <td></td></tr>
+            </table>
+  
+    
+            <table style="margin-left:30px;background-color:  green;color:green"><tr><td><ul><li><h4 style="background-color:green;color: white;text-align: left;" id="cancel_task">Cancel a task by clicking on the cancel task icon.<img src="../images/cancel.png"></h4></li></td></tr>
+                <tr><td><ul><li><h4 style="background-color:green;color: white;text-align: left;">Complete a task by clicking on the complete task icon.<img src="../images/dwcheckyes.png"></h4></li></td></tr></table>
+      <h4 id="complete_task" style="margin-left:30px ;">Completing a task will do two things:<br> 1) It resets the date of the next filter due date ahead by the number of months derived from the rotation number. <br>2) It adjusts the filter inventory to reflect the amount and size of the filters that were used in the task.
+      
+
+</body>

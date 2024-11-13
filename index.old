@@ -1,0 +1,62 @@
+<?php
+header("Cache-Control: no-cache, must-revalidate"); //HTTP 1.1
+header("Pragma: no-cache"); //HTTP 1.0
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+header("Cache-Control: max-age=2592000"); //30days (60sec * 60min * 24hours * 30days)
+?>
+<html>
+<head>
+  <title>Filter Manager by DJ</title>
+  <style>
+   .menu {
+      float:top;
+      width:100%;
+      height:90px;
+      overflow:hidden;
+    }
+    .mainContent {
+      float:bottom;
+      width:100%;
+      height:93%;
+    }
+  </style>
+  <script type="text/javascript">
+    function whatmachine(){
+         const userAgent = navigator.userAgent.toLowerCase();
+ 
+         var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+         if(isMobile){
+           //alert("mobile device");
+           document.cookie =("machine=mobile");
+           //.getElementById("iframe1").height ="10";
+       }else{
+          document.cookie =("machine=desktop");
+          //document.getElementById("iframe1").height ="10";
+       }
+    }
+   </script>
+</head>
+<?php 
+$ua = strtolower($_SERVER["HTTP_USER_AGENT"]); 
+$isMob = is_numeric(strpos($ua, "mobile"));
+if($isMob == 1){
+  $x=20;
+  $y=80;
+}else{
+  $x=40;
+  $y=60;
+}
+?>
+  <!--<iframe class="menu" src="web_login3.php" name="iframe1" seamless="seamless"></iframe>
+  <iframe class="mainContent" src="welcome.html" name="iframe2"></iframe>-->
+  <frameset rows = "20%,80%">
+      <frame name = "iframe1" id="iframe1" src = "web_login3.php" />
+      <frame name = "iframe2" id="iframe2" src = "welcome1.php" />
+   
+      <noframes>
+         <body>Your browser does not support frames.</body>
+      </noframes>
+      
+   </frameset>
+
+</html>

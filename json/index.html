@@ -1,0 +1,45 @@
+<?php
+header("Cache-Control: no-cache, must-revalidate"); //HTTP 1.1
+header("Pragma: no-cache"); //HTTP 1.0
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+header("Cache-Control: max-age=2592000"); //30days (60sec * 60min * 24hours * 30days)
+?>
+<html>
+  <head>
+    <title>Filter Manager by DJ</title>
+    <style></style>
+    <script type="text/javascript">
+      function whatmachine() {
+        const userAgent = navigator.userAgent.toLowerCase();
+
+        var isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+          );
+        if (isMobile) {
+          //alert("mobile device");
+          document.cookie = "machine=mobile";
+          //.getElementById("iframe1").height ="10";
+        } else {
+          document.cookie = "machine=desktop";
+          //document.getElementById("iframe1").height ="10";
+        }
+      }
+    </script>
+  </head>
+  <iframe
+    id="iframe1"
+    name="Iframe1"
+    src="web_login3.php"
+    title=""
+    style="height: 20%; width: 100%; overflow-y: hidden"
+    scrolling="no"
+  ></iframe>
+  <iframe
+    id="iframe2"
+    name="Iframe2"
+    src="welcome1.php"
+    title=""
+    style="height: 90%; width: 100%; overflow-y: hidden"
+  ></iframe>
+</html>
