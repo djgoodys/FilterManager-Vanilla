@@ -1387,8 +1387,8 @@ if(strcmp($UserNamePassed, "false")==0)
 <div style='font-weight:bold;color:white;font-size:1em;background-color:red;'><?php echo $Response ?></div>
 <div style="display:flex;flex-direction:row;">
 <form action="<?php echo $_SERVER["SCRIPT_NAME"] ?>" method="post">
-<input type="text" id="txtUserName" placeholder="ENTER USER NAME HERE" name="username" value="dj" size="21" maxlength="10" height="40 style="margin-right:auto;margin-left:300px;display:inline-block;" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="password" name="password" value="relays" style="color:black;" id="txtPassword" autocomplete="on" placeholder="ENTER PASSWORD HERE"><img src="images/showpassword.png" style="width:20px;height:auto;" onmouseup="document.getElementById('txtPassword').type='password';" onmousedown="document.getElementById('txtPassword').type='text';">&nbsp;&nbsp;&nbsp;<input type="submit" id="btnLogon" class="myButton" name="action" value="login">
-</form><div style="width:fit-content;height:fit-content;background-color:black;color:white;margin:10px;">Use given username and password. Just click log in button.</div></div>
+<input type="text" id="txtUserName" placeholder="ENTER USER NAME HERE" name="username" value="dj" size="21" maxlength="10" height="40 style="margin-right:auto;margin-left:300px;display:inline-block;" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="password" name="password" value="relays"  style="color:black;" id="txtPassword" autocomplete="on" placeholder="ENTER PASSWORD HERE"><img src="images/showpassword.png" style="width:20px;height:auto;" onmouseup="document.getElementById('txtPassword').type='password';" onmousedown="document.getElementById('txtPassword').type='text';">&nbsp;&nbsp;&nbsp;<input type="submit" id="btnLogon" class="myButton" name="action" value="login">
+</form></div>
 </td><td><a href="login_help.php" title="Password help" target="iframe2"><img src="images/passwordhelp2.png" style="width:40px;box-shadow: 4px 4px black;margin-top: 0px; height:auto;border-radius: 50pc;"></a></td></tr>
 </table>
 
