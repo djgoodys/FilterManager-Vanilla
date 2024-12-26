@@ -136,11 +136,7 @@ function confirm_delete(user)
 }
 </script>
 <style>
-input[type=text] {
-    background-color: black;
-    opacity: -1;
-    
-}
+
 th{
     background-color:green;
     color:white;
@@ -240,7 +236,20 @@ if($Action == "Add user"){
         'font_family' => "",
         'font_size' => "",
         'theme' => "",
-        'backup_folder' => $_SESSION["backup_folder"]
+        'backup_folder' => $_SESSION["backup_folder"],
+        "clickme" => "false",
+        "didYouKnow" => [
+            "dont_show",
+            "dont_show",
+            "dont_show",
+            "dont_show",
+            "dont_show",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
     );
     $data[] = $newUser;
     $jsonString = json_encode($data, JSON_PRETTY_PRINT);
@@ -272,10 +281,15 @@ echo "</div>";
 <form id="frmNewUser" autocomplete="off" method="post" action="<?php ECHO $_SERVER["SCRIPT_NAME"] ?>">
 <table style="border:2px solid green" id="tblAddNewUser">
 <th></th><th>ADD NEW USER</th>
-<tr><td><div id='divNewUserName'>New User Name <p  style="font-size:.5em;color:red;">(User name must be at least 2 characters)</p></td><td><input type="text" id="newuser" name="new_user_name" onkeyup="if(this.value.length > 1)
+<tr><td><div id='divNewUserName'>New User Name <p  style="font-size:.5em;color:red;">(User name must be at least 2 characters)</p></td>
+<td >
+    <input type="text" id="newuser" name="new_user_name" onkeyup="if(this.value.length > 1)
         {document.getElementById('btnSubmit').disabled=false;}
         else
-        {document.getElementById('btnSubmit').disabled=true;};DoesUserExist(this.value);"></div>&nbsp;<div id="divNewUserExists" style="display:none;color:red;">User already exists</td></tr>
+        {document.getElementById('btnSubmit').disabled=true;};DoesUserExist(this.value);">
+        </div>&nbsp;<div id="divNewUserExists" style="display:none;color:red;">User already exists
+
+        </td></tr>
 <tr><td><div id="divNewUserPassord">New User Password</div></td><td><input type="password" id="password" name="new_user_password"><img src="images/showpassword.png" style="height:1vw;width:auto;" onclick="showPassword('password');"></td></tr>
 <tr><td><div id="divEmail">Email</div></td><td><input type="text" id="email" name="email"</td><tr>
 <tr><td style="padding-left:auto;padding-right:auto;">Give this user admin rights?<br><input type="radio" name="admin" value="no"  id="rdoAdminNo" checked><label for="rdoAdminNo">NO</label><input type="radio" name="admin" value="yes" id="rdoAdminYes"><label for="rdoAdminYes">YES</label></td><td>(can add new users)</td>

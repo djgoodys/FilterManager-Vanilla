@@ -647,7 +647,7 @@ function getLineNumber() {
            $X=$X+1;
         }
       }
-      break; // Exit loop after finding the user
+      break; 
     }
   }
 
@@ -705,10 +705,14 @@ function getLineNumber() {
 <thead>
     <tr style="top:0px;position:sticky;z-index:4;" id="tableheader">
         <th style="background-color:#07ff10;color:black;text-align:center;">Add<br>Task</th>
-        <th style="background-color:#07ff10;color:black;text-align:center;">Filters<br>Done</td>
-        <th style="background-color:#07ff10;color:black;width:150px;" id="thunitname">Unit Name
+        <th style="background-color:#07ff10;color:black;text-align:center;">Filters<br>Done</th>
+        <th style="background-color:#07ff10;color:black;" >Unit Name
+         <?php if(isset($_SESSION["clickme"]) && $_SESSION["clickme"] == "true"){
+         ?>
+         <div id="divClickMe">Click me<br><label for="ckUnitName" style="color:red">don"t show</label><input type="checkbox" id="ckUnitName" style="display:inline-block; margin-left:5px" onchange="clickme();document.getElementById('divClickMe').style.display='none';">
+         </div>
+         <?php } ?>
 		</th>
-      
 		<form action="ListEquipment.php" method="post">
         <th style="background-color:#07ff10;color:black;">
         <div class="dropdown show">
@@ -1397,6 +1401,25 @@ function setCookie2(cookiename, cookievalue){
 		}
     }
     
+</script>
+<script>
+  function clickme(){
+      console.log("clickme");
+      const xhr = new XMLHttpRequest();
+      const url = "clickme.php";
+
+   xhr.open("GET", url, true); 
+   xhr.onload = function() {
+      if (xhr.status === 200) { 
+         const response = xhr.responseText;
+         console.log(response);
+      } else {
+         console.log("Error:", xhr.statusText); 
+      }
+   };
+
+   xhr.send();
+   }
 </script>
 <script>
    function updateDidYouKnow() {
