@@ -3,6 +3,11 @@ if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_N
    //echo "no session";
      session_start();
    }
+   if(!isset($_SESSION["backup_folder"]))
+   {
+      header('Location: '."start.php");
+   }
+   //echo $_COOKIE["cookie_lastquery"];
 $UserName="";
 $overdue="";
 $fs="";
@@ -10,30 +15,20 @@ $fs="";
 //print_r($_COOKIE);
 //print_r($_GET);
 //print_r($_POST);
-include 'dbMirage_connect.php';
+
 include 'functions.php';
+include 'phpfunctions.php';
 include 'fm.css';
 include 'javafunctions.php';
 include 'checkboxListEquipment.css';
 include 'checkboxFormTasks.css';
-//CREATE ARRAY OF ALL USERS 
-$sql = "SELECT user_name FROM users;";
-$Users = array();
- if ($result = $UsersCon->query($sql)) 
-     {
-          while ($row = $result->fetch_assoc()) 
-             {
-                array_push($Users, $row["user_name"]);
-             }
-     }
 
-$con2 = mysqli_connect($_SESSION["server_name"],$_SESSION["database_username"],$_SESSION["database_password"],$_SESSION["database_name"]);
-$con = mysqli_connect($_SESSION["server_name"],$_SESSION["database_username"],$_SESSION["database_password"],$_SESSION["database_name"]);
 $ByDate="";
- if(isset($_POST['unitid'])){$UnitId = ($_POST['unitid']);}
+ if(isset($_POST['unitid'])){$row["_id"] = ($_POST['unitid']);}
  if(isset($_POST['due_date'])){$DueDate = ($_POST['due_date']);}
  if(isset($_POST['bydate'])){$ByDate = ($_POST['bydate']);}
  if(isset($_COOKIE["cookie_lastquery"])) {$LastQuery=$_COOKIE["cookie_lastquery"];}
+ //echo "lastquery=".$LastQuery."<br>";
 if (isset($_COOKIE["cookie_username"])) {
     $UserName = $_COOKIE["cookie_username"];
     }
@@ -45,20 +40,30 @@ if (isset($_COOKIE["cookie_username"])) {
     $UserName = $_POST["username"];
     }
 
-    
+    //CREATE ARRAY OF ALL USERS 
+    $jsonString = file_get_contents('table_users.json');
+   $data = json_decode($jsonString, true);
+   $arUsers = [];
+   if(is_array($data)){
+   foreach ($data as $obj) {
+      if($obj["backup_folder"] == $_SESSION["backup_folder"]){
+      $arUsers[] = $obj["user_name"];
+   }
+   }
+   }
 
- function AddToUsersProfile($Field, $Value, $con)
+ function ChangeUserSettings($Field, $Value)
 {
-$sql = "UPDATE users SET ".$Field."='" . $Value . "' WHERE user_name='" . $_SESSION['user_name'] . "';";
-               //echo $sql;
-            if ($con->query($sql) === TRUE) 
-               {
-                  //echo "Filter inventory was updated successfully<br>";
-               } 
-               else 
-               {
-                  echo "Error updating users preference: " . $con->error;
-               }
+$jsonString = file_get_contents('table_users.json');
+$data = json_decode($jsonString, true);
+foreach ($data as &$object) {
+   //echo $object["user_name"];
+    if ($object['user_name'] === $_SESSION["user_name"]) {
+        $object[$Field] = $Value;
+    }
+}
+$jsonString = json_encode($data, JSON_PRETTY_PRINT);
+file_put_contents('table_users.json', $jsonString);
 }
 
 if(strlen($_SESSION["field2"]) <= 0){
@@ -69,14 +74,14 @@ $_SESSION["field2"]="Location";
    if (isset($_GET["field2"])) 
    {
       $_SESSION["field2"] = $_GET["field2"];
-      AddToUsersProfile("Field2", $_SESSION["field2"], $con);
+      ChangeUserSettings("Field2", $_SESSION["field2"]);
    }
 
 if(strlen($_SESSION["field3"]) <= 0){$_SESSION["field3"]="Area Served";}
    if (isset($_GET["field3"])) 
    {
       $_SESSION["field3"] = $_GET["field3"];
-      AddToUsersProfile("Field3", $_SESSION["field3"], $con);
+      ChangeUserSettings("Field3", $_SESSION["field3"]);
    }
 //echo "Field2=".$_SESSION["field2"]. " Filed3=". $_SESSION["field3"];
    ?>
@@ -100,36 +105,38 @@ if(isset($_POST['ckoverdue']))
             $overdue = "on";
          }
    }
-$unitid="";
-   if(strcmp($Action,"editunit") == 0)
+$row["_id"]="";
+if(strcmp($Action,"editunit") == 0)
+   {
+         if(isset($_POST["field"])){$FieldName = $_POST["field"];}
+         if(isset($_POST["unitid"])){$ID = $_POST["unitid"];}
+         if(isset($_GET["field"])){$FieldName = $_GET["field"];}
+         if(isset($_GET["unitid"])){$ID = $_GET["unitid"];}
+         if(isset($_GET["notes"])){$Notes = $_GET["notes"];}
+         if(isset($_POST["notes"])){$Notes = $_POST["notes"];}
+         if(isset($_POST["filters_due"])){$FiltersDue = $_POST["filters_due"];}
+         $jsonString = file_get_contents('sites/'.$_SESSION["backup_folder"].'/data.json');
+        $data = json_decode($jsonString, true);
+        foreach ($data['equipment'] as &$object) 
          {
-               if(isset($_POST["field"])){$FieldName = $_POST["field"];}
-               if(isset($_POST["unitid"])){$ID = $_POST["unitid"];}
-               if(isset($_GET["field"])){$FieldName = $_GET["field"];}
-               if(isset($_GET["unitid"])){$ID = $_GET["unitid"];}
-               if(isset($_GET["notes"])){$Notes = $_GET["notes"];}
-               if(isset($_POST["filters_due"])){$FiltersDue = $_POST["filters_due"];}
-               switch ($FieldName) {
+            if ($object['_id'] == $ID) 
+		      { 
+               switch ($FieldName) 
+               {
                case "filters_due":
-                   $sql = "UPDATE equipment SET filters_due = '" . $FiltersDue . "' WHERE _id=" . $ID . ";";
+                   $object["filters_due"] = $FiltersDue;
                   break;
                case "notes":
-                  $sql = "UPDATE equipment SET notes = '" . $Notes . "' WHERE _id=" . $ID . ";";
+                  $object["notes"] = $Notes;
                   break;
           
                default:
-
+               break;
                }
-             
-               //echo $sql;
-            if ($con->query($sql) === TRUE) 
-               {
-                  //echo "Filter inventory was updated successfully<br>";
-               } 
-               else 
-               {
-                  echo "Error updating filter due date: " . $con->error;
-               }
+               $jsonString = json_encode($data, JSON_PRETTY_PRINT);
+               file_put_contents('sites/'.$_SESSION["backup_folder"].'/data.json', $jsonString);
+      }
+   }
          }
    if(strcmp($overdue,"on") == 0)
          {
@@ -142,238 +149,66 @@ $unitid="";
             $query="SELECT _id,unit_name,location,area_served,filter_size,filters_due,filter_type,belts,notes,filter_rotation,filters_last_changed, assigned_to, image  FROM equipment";
          }
         
-   function UpdateInventory($filterSize, $filterType, $ChangedQty)
-{
-global $con;
-   if ($con->connect_error) 
-      {
-         die("Connection failed: " . $con->connect_error);
-       } 
-
-   $sql = "UPDATE filters SET filter_count='" . $ChangedQty . "' WHERE filter_size='" . $filterSize . "' AND filter_type='" . $filterType . "';";
-
-   if ($con->query($sql) === TRUE) 
-      {
-         //echo "Filter inventory was updated successfully<br>";
-      } 
-      else 
-      {
-         echo "Error updating filter inventory: " . $con->error;
-      }
-}
-
-function ExtractFilters($FiltersUsed, $FilterType) 
-{
-   $sql = "SELECT filter_size, filter_count, filter_type FROM filters;";
-   $filters = array();
-   global $con;
-    if ($result = $con->query($sql)) 
-        {
-             while ($row = $result->fetch_assoc()) 
-                {
-                   //echo $row["filter_size"] ."= ".$row["filter_count"]."<br>"; 
-                   $filters[$row["filter_size"]] = $row["filter_count"];  
-                   //$filters[$index] = array('weight'=>$weight, 'height'=>$height, 'rgb'=>$rgb);
-                }
-        }
-                              
-   $f=$FiltersUsed;
-   //echo "number of filter sets=".substr_count($f, '(')."<br>";
-   $numOfSets= substr_count($f,'(');
-   //echo "f sent=" . $f . "<br>";
-   $pos = strpos($f, ")");
-   //echo "found at=". $pos ."<br>";
-   $filterSizeSent = substr($f, $pos+1);  
-   $filtersQtyUsed = substr($f,1,$pos-1);
-   //echo "size sent=".$filterSizeSent . " qtySent=". $filtersQtyUsed. "<br>";
-
-    if($numOfSets == 1)
-       {
-          $pos = strpos($f, ")");
-          $filterSizeSent = substr($f, $pos+1);  
-          $filtersQtyUsed = substr($f,1,$pos-1);
-          $x=0;
-
-          foreach($filters as $key => $value)
-             {
-                if ($key == $filterSizeSent)
-                   {
-                      $x=$x+1;
-                      $QtyUpdated = ((int)$value - ($filtersQtyUsed));
-                      //if(strcmp($UpdateInventory, "yes")==0){UpdateInventory($filterSizeSent, $QtyUpdated);
-                      UpdateInventory($filterSizeSent, $FilterType, $QtyUpdated);
-                   }
-             }
-       }
-   
-    if($numOfSets == 2)
-       {
-          $lastpos = strrpos($f, ")", 0);
-          $pos = strpos($f, "(");
-          $filt1 = substr($f, $pos-strlen($f),$lastpos-2 );
-          //echo "set1=" . $filt1. "<br>";
-          $filt2 = substr(strrchr($f, "("), 0);
-          //echo "set2=" . $filt2. "<br>";
-          //for First filter set
-          $pos = strpos($filt1, ")");
-          $filterSizeSent = substr($filt1, $pos+1);  
-          $filtersQtyUsed = substr($filt1,1,$pos-1);
-          foreach($filters as $key => $value)
-             {
-                if ($key == $filterSizeSent)
-                   {
-                   //echo "qty for ".$key." from array=". $value." qty used=". $filtersQtyUsed."<br>";
-                    $QtyUpdated = ((int)$value - ($filtersQtyUsed));
-                   UpdateInventory($filterSizeSent, $fiterType, $QtyUpdated);
-                    //echo "set1 updated ". $filterSizeSent.":". $QtyUpdated."<br>";                       
-                   }
-            
-             }
-   
-          //for Second filter set
-          $pos = strrpos($filt2, ")");
-          $filterSizeSent = substr($filt2, $pos+1);  
-          $filtersQtyUsed = substr($filt2,1,$pos-1);
-          //echo "set2 size=".$filterSizeSent." qt2=".$filtersQtyUsed."<br>";
-          $filterSizeSent = mb_convert_encoding($filterSizeSent, "ASCII");
-          $filterSizeSent = str_replace ("?", "x", $filterSizeSent);
-          foreach($filters as $key => $value)
-             {  
-            
-                //$filterSizeSent = html_entity_decode($filterSizeSent);
-            
-                //$filterSizeSent=strtoupper($filterSizeSent);
-                //echo "filter from array=" .$key."(".strlen(trim($key)).") filter sent=".$filterSizeSent."(".strlen(trim($filterSizeSent)).")<br>";
-                if ($key == trim($filterSizeSent))
-                  {
-                     //echo "qty from array=".$value."<br>";
-                      $QtyUpdated = ((int)$value - (int)$filtersQtyUsed);
-                     UpdateInventory($filterSizeSent, $FilterType, $QtyUpdated);
-                  }
-             }
-       }
-}
 
 
-   function getNextDueDate($FRotation)
-{   
-        $NextDueMonth = "";
-        $Today= date("Y-m-d");
-        $year = substr($Today, 0, 4);  // returns false
-        $Month = substr($Today, 5, 2);  // returns false
-        //echo "month".$month."<br>";
-        $day = substr($Today, 8, 2);  // returns false
-        //echo "day=".$day."<br>";
-        $month = intval($Month);
-        $rotation=intval($FRotation);
-       $TotalMonths= $month + $rotation;
+
   
-        if(intval($day) > 28 ){ $day="28";}
-        if($TotalMonths > 12 && intval($FRotation) != 24){
-            $duemonth = ($rotation + $month) - 12;
-            $yr = 0;
-            $yr = intval($year) + 1;
-            $year = (string)$yr;
-            $filtersDue = date('Y-m-d', strtotime("+ ".$rotation." months", strtotime($Today)));
-            return $filtersDue;
-         }
-            
-
-        if($NextDueMonth == 12){
-             //echo "b= 12"."<br>";
-             $month = $NextDueMonth;
-            //$year = substr($Today, 0, 4); 
-            //$year = intval($year) + 1;
-            }
-        
-        if($NextDueMonth < 12){
-            //echo "b < 12<br>";
-            $month  = $rotation + intval($month);
-            $d=intval($day);
-            $year = substr($Today, 0, 4); 
-        }
-        if(intval($FRotation) == 24){
-            //echo "<br>year2=". $year;
-            $year = intval($year) + 2;
-            //echo "year = ".$year;
-             $month = substr($Today, 5, 2);  // returns false
-        }
-        $filtersDue=$year."-".$month."-".$day;
-        //echo "New Filter Due Date = ". $filtersDue . "<br>";
-        return $filtersDue;
-}
-//echo "action=".$Action;
 $AssignTo="";
 $id="";
-if(strcmp($Action, "reassignto")==0)
-{
-   if(isset($_POST['AssignTo'])){$AssignTo=$_POST['AssignTo'];} 
-   if(isset($_POST['id'])){$id=$_POST['id'];}   
-   //echo "assigned to=".$AssignTo. " id=".$id;
-   $query = "UPDATE equipment SET assigned_to='" . $AssignTo . "' WHERE _id='" . $id . "';";
-   if (mysqli_query($con, $query)) 
-       {
-       } else {
-           echo "Error re-assigning task: " . mysqli_error($con);
-       }
-   addtask();
-}
 
 if(strcmp($Action, "unitdone")==0)
 {
         if(isset($_POST['filter_rotation'])){$Rotation = $_POST['filter_rotation'];}
         if(isset($_GET['filter_rotation'])){$Rotation = $_GET['filter_rotation'];}
         $effectiveDate = getNextDueDate($Rotation);
-        //echo "effectiveDate=".$effectiveDate;
-        if(isset($_POST['unit_id'])){$UnitID = $_POST['unit_id'];}
-        if(isset($_GET['unit_id'])){$UnitID = $_GET['unit_id'];}
+        if(isset($_POST['unit_id'])){$row["_id"] = $_POST['unit_id'];}
+        if(isset($_GET['unit_id'])){$row["_id"] = $_GET['unit_id'];}
         $NoFilterUsed="";
         if(isset($_POST['no_filters_used']))
             {
                 $NoFilterUsed = "true";
-                if(isset($_POST['no_filters_used'])){$FilterType = $_POST['no_filters_used'];}
+                if(isset($_POST['no_filters_used'])){$row["filter_type"] = $_POST['no_filters_used'];}
             }else {
-	            if(isset($_POST['filter_type'])){$FilterType = $_POST['filter_type'];}
+	            if(isset($_POST['filter_type'])){$row["filter_type"] = $_POST['filter_type'];}
             }
-            if(isset($_POST['filter_type'])){$FilterType = $_POST['filter_type'];}
-            if(isset($_GET['filter_type'])){$FilterType = $_GET['filter_type'];}
+            if(isset($_POST['filter_type'])){$row["filter_type"] = $_POST['filter_type'];}
+            if(isset($_GET['filter_type'])){$row["filter_type"] = $_GET['filter_type'];}
             if(isset($_GET['no_filters_used']))
             {
                 $NoFilterUsed = "true";
-                if(isset($_GET['no_filters_used'])){$FilterType = $_GET['no_filters_used'];}
+                if(isset($_GET['no_filters_used'])){$row["filter_type"] = $_GET['no_filters_used'];}
             }else {
-	            if(isset($_GET['filter_type'])){$FilterType = $_GET['filter_type'];}
+	            if(isset($_GET['filter_type'])){$row["filter_type"] = $_GET['filter_type'];}
             }
-        $FiltersLastChanged = date("Y-m-d")." [".$UserName."]";
-        if(isset($_POST['filters_due'])){$FiltersDue = $_POST['filters_due'];}
-        if(isset($_GET['filters_due'])){$FiltersDue = $_GET['filters_due'];}
+        $row["filters_last_changed"]= date("Y-m-d")." [".$UserName."]";
+        if(isset($_POST['filters_due'])){$row["filters_due"] = $_POST['filters_due'];}
+        if(isset($_GET['filters_due'])){$row["filters_due"] = $_GET['filters_due'];}
         $ActionDone = "changed filters";
         if(isset($_POST['filter_rotation'])){$Rotation=$_POST['filter_rotation'];}
         if(isset($_GET['filter_rotation'])){$Rotation=$_GET['filter_rotation'];}
         if(isset($_POST['filters_used'])){$FiltersUsed=$_POST['filters_used'];} 
         if(isset($_GET['filters_used'])){$FiltersUsed=$_GET['filters_used'];}   
-        if(isset($_POST["unit_id"])){$UnitId= $_POST["unit_id"];}
-        if(isset($_GET["unit_id"])){$UnitId= $_GET["unit_id"];}
-        $sql="UPDATE equipment SET filters_due='".$effectiveDate."', filter_type='". $FilterType."', filters_last_changed='" . $FiltersLastChanged. "', assigned_to = '' WHERE _id = '". $UnitID ."'";
-        if (mysqli_query($con, $sql)) 
-            {
-                if(strcmp($NoFilterUsed, "yes")!=0){ExtractFilters($FiltersUsed, $FilterType);}
-             }else {
-                    echo "Error updating equipment record: " . mysqli_error($con);
-            }
+        if(isset($_POST["unit_id"])){$row["_id"]= $_POST["unit_id"];}
+        if(isset($_GET["unit_id"])){$row["_id"]= $_GET["unit_id"];}
+        $jsonString = file_get_contents('sites/'.$_SESSION["backup_folder"].'/data.json');
+        $data = json_decode($jsonString, true);
+        foreach ($data['equipment'] as &$object) 
+{
+            if ($object['_id'] == $row["_id"]) 
+		         {
+                $object["filters_due"] = $effectiveDate;
+                $object["filter_type"] = $row["filter_type"];
+                $FiltersLastChanged = date('Y-m-d') . " [".$_SESSION["user_name"]. "]";
+                $object["filters_last_changed"] = $FiltersLastChanged;
+                $object["assigned_to"] = "";
+            	}
+}
+$jsonString = json_encode($data, JSON_PRETTY_PRINT);
+file_put_contents('sites/'.$_SESSION["backup_folder"].'/data.json', $jsonString);
 }
 
 //CREATE AN ARRAY OF FILTER TYPES
-$sql = "SELECT type FROM filter_types;";
-   $filtertypes = array();
-   global $con;
-    if ($result = $con->query($sql)) 
-        {
-             while ($row = $result->fetch_assoc()) 
-                {
-                  array_push($filtertypes,$row["type"]); 
-                }
-        }
+   $arFilterTypes = arrayFromDataJson("filter_types", "type");
 
 ?>
 <!DOCTYPE html>
@@ -390,7 +225,7 @@ $sql = "SELECT type FROM filter_types;";
     <title>Unit List</title>
 
 </head>
-<body onunload="saveScrollPosition();"  onload="doOnloadStuff();openInfo();setScrollPosition();">
+<body onunload="saveScrollPosition();"  onload="doOnloadStuff();OpenInfoWindow();setScrollPosition();">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
@@ -398,19 +233,22 @@ $sql = "SELECT type FROM filter_types;";
 function doOnloadStuff()
 {
 //GET TASKS SAVED TO COOKIE
-try{
-var thisTask = [];
-const allTasks = JSON.parse(getJavaCookie("tasklist"));
-for (var i = 0; i < allTasks.tasks.length; i++) { 
-   addTaskToForm(allTasks.tasks[i].id, allTasks.tasks[i].unitname, true) 
+
+try {
+  // Existing code
+  var thisTask = [];
+  console.log("tasklist from cookie=" + getJavaCookie("tasklist"));
+  const allTasks = JSON.parse(getJavaCookie("tasklist"));
+  for (var i = 0; i < allTasks.tasks.length; i++) {
+    addTaskToForm(allTasks.tasks[i].id, allTasks.tasks[i].unitname, true);
+  }
+} catch (error) {
+  // Handle errors here
+  console.error("Error processing tasklist:", error);
+  // You can also display an error message to the user, log the error to a server, etc.
 }
-}catch{
-   console.log("error occured on loading Tasks");
-}
-//SEE IF A UNIT INFO WINDOW WAS OPEN
-if(getJavaCookie("cookie_infoid") != ""){
-   showinfo(getJavaCookie("cookie_infoid"))
-}
+
+
 }
 </script>     
 <script>
@@ -418,7 +256,7 @@ function editUnit(unit_id, field){
 switch (field) {
 case "filters_due":
 document.getElementById("modaleditUnit").style.display="block";
-document.getElementById("txtUnitId").value=unit_id;
+document.getElementById("txtUnitId").value = unit_id;
 document.getElementById("txtNotes").style.display="none";
 document.getElementById("modalDate").style.display="block";
 document.getElementById("txtFieldToUpdate").value="filters_due";
@@ -443,16 +281,17 @@ break;
     <div style="color:green;font-weight:bold;" id="modal_header">Pick filter due date</div>
 <form action="<?php echo $_SERVER["SCRIPT_NAME"] ?>" method="post" id="frmModal">
 
-<input type="hidden" name="unitid" value="notes" id="txtUnitId"><input type="hidden" name="action" value="editunit">
+<input type="hidden" name="unitid" value="" id="txtUnitId">
+<input type="hidden" name="action" value="editunit">
 
 <input type="text" id="txtFieldToUpdate" name="field" value="" style="display:none;margin-left:auto;margin-right:auto;">
 
-<input type="date" style="display:none;margin-left:auto;margin-right:auto;" name="filters_due" id="modalDate" onchange="this.form.submit();">
+<input type="date" style="display:none;margin-left:auto;margin-right:auto;" name="filters_due" id="modalDate" onchange="this.form.submit();"><button type="button" class="btn button btn-danger" style="width:100px;height:50px;margin-left:auto;margin-right:auto;text-align:center;margin-left:auto;margin-right:auto;" onclick="document.getElementById('modaleditUnit').style.display='none';">Cancel</button>
 
 <textarea id="txtNotes" name="notes" style="overflow:auto;width:8vw;margin-left:auto;margin-right:auto;text-align:center;width:20vw;border-radius:5%;display:none;"></textarea>
-<div style="display:flex;flex-direction:row;width:200px;height:20vh;margin-left:auto;margin-right:auto;">
-<button class="btn button btn-success" style="width:8vw;height:10vh;text-align:center;display:none;" onclick="this.form.submit();" style="display:none;" id="btnModalSubmit">Submit</button></form></p>
-    <button type="button" class="btn button btn-danger" style="width:8vw;height:10vh;text-align:center;" onclick="document.getElementById('modaleditUnit').style.display='none';">Cancel</button></div>
+<div style="display:flex;flex-direction:column;width:200px;height:20vh;">
+<button class="btn button btn-success" style="width:100px;height:50px;text-align:center;display:none;" onclick="this.form.submit();" style="display:none;" id="btnModalSubmit">Submit</button></form></p>
+    </div>
   </div>
 
 </div>
@@ -471,6 +310,16 @@ document.addEventListener('keydown', (e) => {
 });
 </script>
 <style type="text/css">
+
+   .DidYouKnow {
+      background-color:black;
+      color:white;
+      vertical-align:center;
+      display: inline-block;
+      width:100%;
+      height:fit-content;
+      text-align: left;
+   }
    .wrapper{
   background: #fff;
   border-radius: 5px;
@@ -501,7 +350,6 @@ document.addEventListener('keydown', (e) => {
   border: 1px solid #bfbfbf;
    overflow-y: auto;
 overflow-x:auto;
-//max-width:20vw;
 }
 textarea::placeholder{
   color: #b3b3b3;
@@ -545,17 +393,17 @@ textarea::-webkit-scrollbar{
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
-}<script>
+}
 </style>
 
 <script>
-   function openInfo(){
+   function OpenInfoWindow(){
     try{
       x=getCookie('cookie_infoid');
-
+      console.log("OpenInfoWindow="+x);
       document.getElementById(x).style.display = "block";
     } catch (error) {
-       console.log("error with function openInfo");
+        console.log("error with function OpenInfoWindow");
     }
          }
 </script>
@@ -624,13 +472,6 @@ function submittasks(UserName) {
 }
 </script>
 <script>
-   function FiltersDone(Url, ItemID){
-      myfiltertype = document.getElementById('slctFilterTypes'+ItemID).value;
-      username = getCookie("cookie_username");
-      window.location = Url+'&filter_type='+myfiltertype+'&username='+username;
-      }
-</script>
-<script>
    function changeHyperLink($hyperlinkID, $item_id){
       var selectbox = document.getElementById($item_id);
       var value = selectbox.value;
@@ -660,16 +501,16 @@ function submittasks(UserName) {
 
    </script>
 <script>
-function showinfo($divID) {
-
+function showinfo($divID, $UnitName, $UnitId) {
          var my_disply = document.getElementById($divID).style.display;
-         setJavaCookie("cookie_infoid", $divID, 1);
+         setCookie2("cookie_infoid", $divID);
+         document.cookie = "unitid=" + $UnitId;
         if(my_disply == "none"){
                saveScrollPosition();
               document.getElementById($divID).style.display = "block";
               setTimeout(setScrollPosition, 100);
             }else{
-        setJavaCookie("cookie_infoid", "void", 1);
+        setCookie2("cookie_infoid", "void");
      }
    }
 </script>
@@ -679,23 +520,15 @@ function closeinfo($divID) {
 
         document.getElementById("tblUnitInfo"+$divID).style.display = 'none';
 document.getElementById("checkCloseInfo"+$divID).checked = false;
-        setJavaCookie("cookie_infoid", "void", 1);
+        setCookie2("cookie_infoid", "void");
      }
 </script>
 <?php
 
 //CREATING ARRAY OF ALL UNIT NAMES FOR SEARCH BOXES
-include 'dbMirage_connect.php';
-   $sql = "SELECT unit_name FROM equipment;";
-   $arUnits = array();
-   global $con;
-    if ($result = $con->query($sql)) 
-        {
-             while ($row = $result->fetch_assoc()) 
-                {
-                   array_push($arUnits, $row["unit_name"]);
-                }
-        }
+
+   $arUnits = arrayFromDataJson("equipment", "unit_name");
+
 //print_r($arUnits);
 ?>
 <script>
@@ -705,33 +538,26 @@ echo "var unitsArray = ". $js_array . ";\n";
 ?>
 </script>
 <?php
-//echo var_dump($_POST);
-//error_reporting(E_ALL);
 
-// Check connection
-if(mysqli_connect_errno()){
-	//echo "<font color='white'>Failed to connect to MySQL: " . mysqli_connect_error();
-    }else{
-	//echo "<font color='white'>Connection to database successfully";
+$jsonString = file_get_contents('sites/'.$_SESSION["backup_folder"].'/data.json');
+$data = json_decode($jsonString, true);
+
+// Extract the "filter_size" values into an array
+$arFiltersOOS=[];
+$row["filter_size"] = [];
+foreach ($data["filters"] as $filterObject) {
+   if($filterObject["filter_count"] <= 0){
+    $arFiltersOOS[] = $filterObject["filter_size"];
+}
 }
 
-$query = "SELECT filter_size  FROM filters WHERE filter_count <= 0;";
-   $result = mysqli_query($con, $query) or die(mysqli_error());
-
-
-//while($row = mysqli_fetch_array($result)){
-	//echo $row['filter_size']."<br>";
-//}
- 
 $AssignedTo = null;
-//echo "session status=".session_status()."<BR>";
-
 if (isset($_POST["action"])) {
     $Action = $_POST["action"];
 }
 
 if(isset($_POST["ckBox"])){
-   $unitid = $_POST["ckBox"];
+   $row["_id"] = $_POST["ckBox"];
  foreach ($_POST["ckBox"] as $unitnam)
  {
 	 //echo "name=".$unitnam;
@@ -741,93 +567,48 @@ if(isset($_POST["ckBox"])){
    //echo "check box not found";
 }
 
-if (strcmp($Action,"edit_task")==0) 
+if (strcmp($Action,"reassign_task")==0) 
    {
       $ReAssignedTo = "";
       $Assigned_To = "";
-      $uid="";//assignedto="+assignedto+"&reassignto
+      $uid="";
+      if (isset($_GET["id"])) {$uid = $_GET["id"];}
       if (isset($_GET["reassignto"])) {$ReAssignedTo = $_GET["reassignto"];}
       if (isset($_GET["assignedto"])) {$Assigned_To = $_GET["assignedto"];}
       //echo "ReAssignedTo=".$ReAssignedTo. " Assigned_To=".$Assigned_To;
-      if (isset($_GET["id"])) {$uid = $_GET["id"];}
-            $sql="UPDATE equipment SET assigned_to ='".$ReAssignedTo."' WHERE _id = '".$uid."';";
-            if ($con->query($sql) === TRUE) 
-                    {
-                        //echo "Equipment Reassigned<br>".$sql."<br>";
-                    }
-                    else
-                    {
-                        echo "Error editing equipment. Please submit a bug report with this line: " . $sql . "<br>" . $con->error;
-                    }
-            $sql="UPDATE equipment SET assigned_to ='".$ReAssignedTo."' WHERE  _id = '".$uid."';";
-            if ($con->query($sql) === TRUE) 
-                    {
-                        //echo "Task Reassigned<br>".$sql;
-                    }
-                    else
-                    {
-                        echo "Error updating tasks. Please submit a bug report including this line: " . $sql . "<br>" . $con->error;
-                        //die('Could not enter data: ' . mysqli_error($con2));
-                    }
+    $jsonString = file_get_contents('sites/'.$_SESSION["backup_folder"].'/data.json');
+        $data = json_decode($jsonString, true);
+        foreach ($data['equipment'] as &$object) 
+         {
+            if ($object['_id'] === $uid) 
+		      {
+                $object["assigned_to"] = $ReAssignedTo;
+            	}
+         }
+      $jsonString = json_encode($data, JSON_PRETTY_PRINT);
+      file_put_contents('sites/'.$_SESSION["backup_folder"].'/data.json', $jsonString);           
 }
 
 if (strcmp($Action,"addalltasks")==0) 
    {
-      //$unitid = $_POST['ckBox'];
+      //$row["_id"] = $_POST['ckBox'];
       $data = array();
-      foreach ($unitid as $unit)
+      foreach ($row["_id"] as $unit)
          { 
-		       //echo "unit=".$unit."<br>";
-            $query = "UPDATE equipment SET assigned_to='".$UserName."' WHERE _id='" . $unit . "';"; 
-          if ($con->query($query) === TRUE) 
-            {
-            //echo "Task for unit id:".$unit." added successfully";
-            } else {
-            echo "Error updating record for : " . $unit. "error= ".$con->error;
+            $jsonString = file_get_contents('sites/'.$_SESSION["backup_folder"].'/data.json');
+            $data = json_decode($jsonString, true);
+            foreach ($data['equipment'] as &$object) {
+               if ($object['_id'] == $unit) {
+                  $object['assigned_to'] = $_SESSION["user_name"];
+               }
             }
-
+            $jsonString = json_encode($data, JSON_PRETTY_PRINT);
+            file_put_contents('sites/'.$_SESSION["backup_folder"].'/data.json', $jsonString);
          }
-
    }
-   function addtasks(&$arrayname, $con, $con2, $Uname)
-    {
-        foreach ($arrayname as $person)
-            {
-            foreach ($person as $key=>$value)
-                {
-                foreach ($value as $mkey=>$mvalue)
-                {
-                if($mkey=="unit_name"){$UnitName = $mvalue;}
-                if($mkey=="unit_id"){$UnitID = $mvalue;}
-                if($mkey=="location"){$Location = $mvalue;}
-                if($mkey=="filter_size"){$FilterSize = $mvalue;}
-                if($mkey=="filters_due"){$FiltersDue = $mvalue;}
-                if($mkey=="rotation"){$Rotation = $mvalue;}
-                }
-                
-                addtask($con, $con2, $Uname, $UnitID,$Location,$UnitName,$FilterSize, $Rotation, $FiltersDue);
-                //echo "<br>unitid=".$UnitID. " location=".$Location." unit name=".$UnitName." fsize=".$FilterSize." rotation=". $Rotation. " filtersdue=". $FiltersDue;
-                }
-                
-                
-            }
-            
-    }
-    
-if ($Action == "addtask") {
-    AddTask($con, $UnitID);
-}
-
-//echo "<a href='ListEquipment.php?action=reset'>reset cookie</a>";
-if(strcmp($UserName, "")==0 || strcmp($UserName, "none")==0)
-   {
-      //header("Location: web_login.php"); 
-      // exit;
-   }
-
   
    if (isset($_GET['unit_name'])) {$UnitName=$_GET['unit_name'];}
-   if(isset($_POST['_id'])){$UnitID = ($_POST['_id']);}
+   if(isset($_POST['_id'])){$row["_id"] = ($_POST['_id']);}
    if(isset($_POST['ckoverdue'])){$overdue = $_POST['ckoverdue'];}
  $ByDate="no";
    if(isset($_POST['bydate'])){
@@ -846,22 +627,90 @@ if(strcmp($UserName, "")==0 || strcmp($UserName, "none")==0)
            break;
     }
   }
+
+function getLineNumber() {
+  $filename = "table_users.json";
+  $data = json_decode(file_get_contents($filename), true);
+
+  if (json_last_error() !== JSON_ERROR_NONE) {
+    // Handle JSON decode error (optional)
+    return null; // Or throw an exception
+  }
+   $X=0;
+  foreach ($data as $user) {
+    if ($user['user_name'] == $_SESSION["user_name"]) {
+      if (isset($user['didYouKnow'])) {
+        foreach ($user['didYouKnow'] as $key => $value) {
+          if ($value != "dont_show") {
+            return $X; // Return first non-"dont_show" value
+          }
+           $X=$X+1;
+        }
+      }
+      break; // Exit loop after finding the user
+    }
+  }
+
+  // User not found or no "didYouKnow" field
+  return null;
+}
+
+
+  $LineNumber ="";
+  $LineNumber = getLineNumber();
+  $DidYouKnow  = getDidYouKnow($LineNumber);
+  //echo "lineNumber=".$LineNumber."<br>did you know= ".$DidYouKnow."<br>";
+  function getDidYouKnow($LineNumber) {
+   $fileName = "didYouKnow.txt";
+ 
+    $fileHandle = fopen($fileName, "r");
+  
+    if ($fileHandle === false) {
+      // Handle file opening error (optional)
+      return false;
+    }
+  
+    // Loop to find the desired line
+    $currentLine = 1; // Start with line 1
+    while (!feof($fileHandle)) {
+      $line = fgets($fileHandle);
+  
+      // Extract line number and content
+      $parts = explode(" ", $line, 2); // Split at first space
+      //echo $parts[0]. "=".$LineNumber."<br>";
+      if (count($parts) >= 2 && trim($parts[0]) == $LineNumber.".") {
+        //echo "<br>line number found<br>";
+        $DidYouKnow = trim($parts[1]); // Remove leading/trailing whitespace
+        fclose($fileHandle);
+        return $DidYouKnow;
+      }
+  
+      $currentLine++; // Increment line counter for the next iteration
+    }
+  
+    // Line not found
+    fclose($fileHandle);
+    return false;
+  }
+  
+
 ?>
 <div id="divTasks" style="overflow-x: auto;overflow-y: hidden;white-space: nowrap;background-color:green;display:inline-block;">
  <form action="ListEquipment.php" method="post" id="frmsubmittasks" title="Add units to tasks list" style="background-color:green;color:white;height:100px;margin-left:20px;display:none;flex-direction:row;"><button class="btn btn-primary rounded-9 btn-sm" style="width: fit-content;height:60px;white-space: normal;border-radius:10px;margin-top:20px;" onclick="submittasks('<?php echo $UserName ?>');">Submit Tasks</button><button type="button" class="btn btn-danger rounded-9 btn-sm" style="width: fit-content;height:60px;white-space: normal;border-radius:10px;margin-top:20px;" onclick="if(confirm('Delete all tasks?') == true){cancelAllTasks();}">Cancel All</button>
  <input type="hidden" name="action" value="addalltasks">
    <input type="hidden" name="username" id="username" value="<?php echo $UserName ?>"></div><select id="slctTasks" style="display:none;"></select>
    </form>
-   <div id="table-wrapper" style="">
-<table class="myTable" id="myTable" style="width:100%;" style="height:100%;overflow-y: auto;">
+   <div id="divDidYouKnow" class="DidYouKnow"><input type="text" id="txtDidYouKnowLineNumber" value="<?php echo $LineNumber ?>" style="display:none;"><img src="images/DidYouKnow.jpg" style="width: 50px;height:50px;"><?php echo $DidYouKnow ?>&nbsp;&nbsp;&nbsp;<button class="btn btn"success" onclick="document.getElementById('divDidYouKnow').style.display='none';">Close</button><label style="float:right;margin-right:100px;color:red;">&nbsp;&nbsp;&nbsp;Do not show again.&nbsp;&nbsp;&nbsp;<input type="checkbox" onclick="updateDidYouKnow();" style="margin-top:10px;width: 25px;height:25px;" id="ckDidyouknow"></label></div>
+<table class="myTable" id="myTable" style="width:100%;">
 <thead>
     <tr style="top:0px;position:sticky;z-index:4;" id="tableheader">
-        <th style="background-color:#07ff10;color:black;text-align:center;width:10%;">Add<br>Task</th>
-        <th style="background-color:#07ff10;color:black;text-align:center;width:20%;">Filters<br>Done</td>
-        <th style="background-color:#07ff10;color:black;text-align:center;width:10%;" id="thunitname"><div style="margin-right:auto;margin-left:0;text-align: left;">Unit Name</div></th>
+        <th style="background-color:#07ff10;color:black;text-align:center;">Add<br>Task</th>
+        <th style="background-color:#07ff10;color:black;text-align:center;">Filters<br>Done</td>
+        <th style="background-color:#07ff10;color:black;width:150px;" id="thunitname">Unit Name
+		</th>
       
 		<form action="ListEquipment.php" method="post">
-        <th style="background-color:#07ff10;color:black;width:25%">
+        <th style="background-color:#07ff10;color:black;">
         <div class="dropdown show">
       <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color:#07ff10;color:black;font-weight:bold;"><?php echo $_SESSION["field2"] ?></a>
 
@@ -872,7 +721,7 @@ if(strcmp($UserName, "")==0 || strcmp($UserName, "none")==0)
       </div>
       </div>
 		</th>
-        <th id="thfield3" style="background-color:#07ff10;color:black;width:25%">
+        <th id="thfield3" style="background-color:#07ff10;color:black;">
          <div class="dropdown show" >
       <a class="btn btn-secondary dropdown-toggle font-weight-bold" style="background-color:#07ff10;color:black;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <?php echo $_SESSION["field3"] ?>
@@ -885,7 +734,7 @@ if(strcmp($UserName, "")==0 || strcmp($UserName, "none")==0)
          <a class="dropdown-item" href="<?php echo $_SERVER["SCRIPT_NAME"] ?>?field3=Notes">Notes</a>
          </div>
          </div></th>
-        <th style="background-color:#07ff10;color:black;width:10%;"><font color="black">Due Date<!--<?php if(strcmp($ByDate, "no") != 0){ echo "<br><div style='font-size:10px;background-color:black;color:aqua;'>".$ByDate."</div>";} ?>--></th>
+        <th style="background-color:#07ff10;color:black;"><font color="black">Due Date<!--<?php if(strcmp($ByDate, "no") != 0){ echo "<br><div style='font-size:10px;background-color:black;color:aqua;'>".$ByDate."</div>";} ?>--></th>
         
     </tr></thead>
   
@@ -894,125 +743,247 @@ if(strcmp($UserName, "")==0 || strcmp($UserName, "none")==0)
    //GET LAST QUERY IN CASE PAGE WAS TEMPERARALY CHANGED
    $LastQuery ="";
     //lAST QUERY IS SAVED WITH JAVASCRIPT WHEN ELEMENTS ARE CLICK USING FUNCTION setLastQuery()
-   if(isset($_COOKIE["cookie_lastquery"])){
-      $LastQuery=$_COOKIE["cookie_lastquery"];
-      //echo "last qry=".$_COOKIE["cookie_lastquery"];
+   if(isset($_COOKIE["cookie_lastquery"]))
+      {
+         $LastQuery=$_COOKIE["cookie_lastquery"];
+         //echo "last qry=".$_COOKIE["cookie_lastquery"];
       }
+      else
+      {
+         $LastQuery="SELECT";
+      }
+if(strcmp($Action,"clearsearch")==0){
+      $query= "SELECT _id,unit_name,location,area_served,filter_size,filters_due,filter_type,belts,notes,filter_rotation,filters_last_changed, assigned_to, image FROM equipment;";
+   }
 
-   if(strlen($LastQuery) == 0)
+if(strlen($LastQuery) >= 0)
+{
+  // $query="NORMAL";
+}
+else
+{
+   //$query = $LastQuery;
+}
+
+//--------------GET DATA BY SEARCH--------------
+
+if(strpos($LastQuery, "LIKE"))
+   {
+      if(isset($_COOKIE["SearchWords"]))
+      {
+         $SearchWords = $_COOKIE["SearchWords"];
+      }
+      else
+      {
+         $SearchWords = "";
+      }
+$searchFields = [
+    "_id",
+    "unit_name",
+    "location",
+    "area_served",
+    "filter_size",
+    "filters_due",
+    "belts",
+    "notes",
+    "filter_rotation",
+    "filter_type",
+    "filters_last_changed",
+    "assigned_to",
+    "image"
+];
+$equipment = [];
+foreach ($data["equipment"] as $unit) {
+    foreach ($searchFields as $field) {
+      //echo "filed=".$field. " SearchWords=".$SearchWords;
+      if($SearchWords != ""){
+        if (strpos(strtolower($unit[$field]), strtolower($SearchWords)) !== false) {
+            $equipment[] = $unit;
+            break; 
+        }
+      }
+    }
+}
+   }
+
+$Id="";
+$UnitName="";
+$row["location"] ="";
+$jsonString = file_get_contents('sites/'.$_SESSION["backup_folder"].'/data.json');
+$data = json_decode($jsonString, true);
+switch ($LastQuery) 
+{
+  case "OVERDUE":
+   $today = date("Y-m-d");
+   $equipment = [];
+   foreach ($data["equipment"] as $obj) 
+   {
+      $filterDueDateObject = new DateTime($obj["filters_due"]);
+      $todayObject = new DateTime($today);
+      if ($filterDueDateObject < $todayObject) 
+      {
+         $equipment[] = $obj;
+      }
+   }
+   break;
+
+    case "NORMAL":
+   {
+   //echo "the lastquery=".strpos($LastQuery,"NORMAL")."<br>";
+    $equipment = $data['equipment'];
+    //print_r($equipment);
+   }
+   break;
+
+   case "SELECT":
+   {
+   //echo "the lastquery=".strpos($LastQuery,"NORMAL")."<br>";
+    $equipment = $data['equipment'];
+    //print_r($equipment);
+   }
+   break;
+
+   case "ASC":
+   {
+      usort($data['equipment'], function($a, $b) 
+         {
+      return strtotime($a['filters_due']) - strtotime($b['filters_due']);
+         });
+      $equipment = $data["equipment"]; 
+   }
+   break;
+
+   case "DESC":
+   {
+      usort($data['equipment'], function($a, $b) 
+      {
+         return strtotime($b['filters_due']) - strtotime($a['filters_due']);
+      });
+      $equipment = $data["equipment"];
+      break;
+   }
+
+   case "today":
+   {
+      $today = date('Y-m-d');
+      //echo "today=".$today;
+      $equipment = [];
+         foreach($data["equipment"] as $obj)
             {
-               $query="SELECT _id,unit_name,location,area_served,filter_size,filters_due,filter_type,belts,notes,filter_rotation,filters_last_changed, assigned_to, image FROM equipment;";
+               //echo $obj["filters_due"] ."==". $today."<br>";
+            if($obj["filters_due"] == $today)
+               {
+                  $equipment[]=$obj;
+                  if(count($equipment) <= 0){echo "nothing here";}
+               }
             }
-            else
-            {
-               $query = $LastQuery;
-            }
-            if ($stmt = $con->prepare($query)) {
-        $stmt->execute();
-        //Bind the fetched data to $unitId and $UnitName
-        $stmt->bind_result($unitId, $UnitName, $Location, $AreaServed, $FilterSize, $FiltersDue, $FilterType, $Belts, $Notes, $FilterRotation, $FiltersLastChanged, $AssignedTo, $Image );
-          $X=0;
-          $EquipmentList="";
-        while ($stmt->fetch()) {
-        $EquipmentList= $EquipmentList . "{\"units\":[  {\"_id\":\"".$unitId."\", \"unit_name\":\"".$UnitName."\",\"location\":\"".$Location."\"}]}";
-         $X=$X+1;
-        
+   }
+   //print_r($equipment);
+   break;
+}
+
+if(count($equipment) > 0)
+{
+    foreach($equipment as $row)
+      {
+         $X=0;
+         $EquipmentList="";
+         $AssignedTo = $row["assigned_to"];
          $today = date('Y-m-d');
-        $someDate = new DateTime($FiltersDue);
-        $daysoverdue= s_datediff("d",$today,$someDate,true);
-            ?>
-            <tr>
-			<?php 
-					if(getFilterCount($FilterSize, $result)=="outofstock")
-					{
-						$outofstock="outofstock";
-					}
-					else
-					{
-						$outofstock="";
-					}
-					
+         $someDate = new DateTime($row["filters_due"]);
+         $daysoverdue= s_datediff("d",$today,$someDate,true);
+         ?>
+         <tr>
+         <?php 
+         if(is_array($arFiltersOOS) > 0){
+         if(getFilterCount($row["filter_size"], $arFiltersOOS)=="outofstock")
+         {
+            $outofstock="outofstock";
+         }
+         else
+         {
+            $outofstock="";
+         }
+         }		
 			$myCss = GetCss($Theme,$daysoverdue,$outofstock); 
          $myCss = $myCss ."font-family:".$_SESSION["font_family"];
 			?>
-                    <td style='<?php echo $myCss ?>;width:fit-conent;'>
-                        <?php 
-                        if($AssignedTo == "")
-                           {
-                                 ?>
-                                 <label class="container"><input type="checkbox" class="checkmarkListEquipment" id="cktask<?php echo $unitId ?>" onchange="addTaskToForm('<?php echo $unitId ?>','<?php echo $UnitName ?>', false);" value="<?php echo $unitId ?>">
-                                 <span class="checkmark"></span>
-                                 </label>
-                                 <?php 
-                           }
-                           else
-                           { 
-                              ?>
-                              <div style="text-align:center;width:100%;"  onclick="showSelectUsers(<?php echo $unitId ?>);"><?php echo $AssignedTo ?></div><div id='divSelectUser<?php echo $unitId ?>' style='display:none;margin-left:auto;margin-right:auto;'>
-                              <div class="dropdown show">
-                              <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color:#07ff10;color:black;font-weight:bold;">Re-assin too
-                              </a>      
-                              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" >
-                              <a class='dropdown-item' href='#' onclick="document.getElementById('divSelectUser<?php echo $unitId ?>').style.display='none';">Cancel</a>
-                              <?php
-                              foreach ($Users as $value) 
-                                 {
-                                    echo "<a class='dropdown-item' href='".$_SERVER['SCRIPT_NAME']."?action=edit_task&assignedto=".$UserName."&reassignto=".$value."&id=".$unitId."'>".$value."</a>";
-                                 }
-                              echo "</div></div></td>";
-                           }
-                           ?>
-                        <td style='<?php echo $myCss ?>;text-align:center;'>
-                        <label class="switch">
-                        <input type="checkbox" id="ckShowFilterTypes<?php echo $unitId ?>" onChange="showFilterTypes('<?php echo $unitId ?>');">
-                        <span class="slider round"></span>
-                        </label></checkbox>
-                        <?php $myURL = "ListEquipment.php?action=unitdone&filter_rotation=".$FilterRotation."&unit_id=".$unitId."&unit_name=".$UnitName."&filter_size=".$FilterSize."&filters_used=".$FilterSize."&filters_due=".$FiltersDue; ?>
-                        <br>
-                        <div class="dropdown d-none" id="slctFilterTypes<?php echo $unitId ?>">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                           select filter used
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <?php
-                        foreach ($filtertypes as $value) {
-                           echo "<a class='dropdown-item' href='".$myURL."&filter_type=".$value."'>".$value."</a>";
-                        }
-                        ?>
-                        <a class='dropdown-item' href='<?php echo $myURL ?>&filter_type=no_filters_used'>No filters used</a>
-                        </div>
-                        </div>
-                   <A style="display:none;" id="ahref<?php echo $unitId ?>" href="ListEquipment.php?action=unitdone&username=<?php echo $UserName ?>&filter_rotation=<?php echo $FilterRotation ?>&unit_id=<?php echo $unitId ?>&unit_name=<?php echo $UnitName ?>&filter_size=<?php echo $FilterSize ?>&filters_used=<?php echo $FilterSize ?>&filters_due=<?php echo $FiltersDue ?>" style="font-weight: bold;font-size: 50px;color:white;background-color:gold;height:170px;width:100%;"><div style="font-weight: bold;font-size: 50px;background-color:white;height:50px;">SUBMIT</div></A>
-                     </td>
-					<td style="<?php echo $myCss ?>" id='info'>
-                    <a href="#" onclick="showinfo('tblUnitInfo<?php echo $unitId ?>');"> <div style="<?php echo $myCss ?>;text-align:left;width:10vw;margin-right:auto;margin-left:auto;" id='mydiv<?php echo $unitId ?>'>
-					<?php echo $UnitName ?></div></a>
- 
-                 <table class="tableUnitInfo" style="display:none;" id="tblUnitInfo<?php echo $unitId ?>">
-                  <tr id = "trinfo"><td><div class="bg-info" style="box-shadow: 4px 4px black;border-radius:10px;height:25px;text-align:center;font-weight:bold;"  name="checkbox" value="value" id="checkCloseInfo<?php echo $unitId ?>" title="Close information window for <?php echo $UnitName ?>" onclick="closeinfo('<?php echo $unitId ?>');">CLOSE</div>
-
-
-                     </td><td></td>
-                  </tr>
-                 <tr><td class="tdUnitInfo" style="text-align:left;">Unit name</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $UnitName ?></td></tr>
-                  <tr><td class="tdUnitInfo" style="text-align:left;">Assigned too</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $AssignedTo ?></td></tr>
-                   <tr><td class="tdUnitInfo" style="text-align:left;">Location</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $Location ?></td></tr>
-                   <tr><td class="tdUnitInfo" style="text-align:left;">Area served</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo  $AreaServed ?></td></tr>
-                  <tr><td class="tdUnitInfo" style="text-align:left;">Filter size</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $FilterSize ?></td></tr>
-                  <tr><td class="tdUnitInfo" style="text-align:left;">Filter type</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $FilterType ?></td></tr>
-                  <tr><td class="tdUnitInfo" style="text-align:left;width:100px;"> Filters due</td><td class="tdUnitInfo2" style="cursor:grab;text-align:left;" onclick="editUnit('<?php echo $unitId ?>', 'filters_due');document.getElementById('modalDate').value='<?php echo $FiltersDue ?>';"><?php echo $FiltersDue ?></td></tr>
-                   <tr><td class="tdUnitInfo" style="text-align:left;">Filters last changed</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $FiltersLastChanged ?></td></tr>
-                   <tr><td class="tdUnitInfo" style="text-align:left;">Rotation</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $FilterRotation ?></td></tr>
-                  <tr><td class="tdUnitInfo" style="text-align:left;">Belts</td><td class="tdUnitInfo2" style="text-align:left;"> <?php echo $Belts ?></td></tr>
-                   <tr><td class="tdUnitInfo" style="text-align:left;">Notes</td><td class="tdUnitInfo2" style="text-align:left;" onclick="editUnit('<?php echo $unitId ?>', 'notes');document.getElementById('txtNotes').value=document.getElementById('divNotes<?php echo $unitId ?>').innerHTML;"><div id="divNotes<?php echo $unitId ?>" class="wrapper" style="cursor:grab;"><?php echo $Notes ?></div><textarea style="display:none;color:white;" id="editNotes<?php echo $unitId ?>" class="wrapper" onkeyup="document.getElementById('aEditNotes<?php echo $unitId ?>').href='<?php echo $_SERVER["SCRIPT_NAME"] ?>?unitid=<?php echo $unitId ?>&notes='+document.getElementById('editNotes<?php echo $unitId ?>').value+'&field=notes&action=editunit';"><?php echo $Notes ?></textarea><a href="" id="aEditNotes<?php echo $unitId ?>"><button style="display:none;" type="button" id="editNotesSubmit<?php echo $unitId ?>" class="btn btn-Success">Save</button></a></td></tr>
-                   <tr><td class="tdUnitInfo" style="text-align:left;">
-                   <a href="webEditUnit.php?_id=<?php echo $unitId ?>"><div class="btn btn-warning" title="Edit <?php echo $UnitName ?> properties" style="box-shadow: 4px 4px black;">EDIT UNIT</div></a>
-                                     
-                   </td><td class="tdUnitInfo" style="text-align:left;">
-                   <?php 
-                   if ($Image != null)
+         <td style='<?php echo $myCss ?>'>
+            <?php 
+            if($AssignedTo == "")
+               {
+                  ?>
+                  <label class="container"><input type="checkbox" class="checkmarkListEquipment" id="cktask<?php echo $row["_id"] ?>" onchange="addTaskToForm('<?php echo $row["_id"] ?>','<?php echo $row["unit_name"] ?>', false);" value="<?php echo $row["_id"] ?>">
+                  <span class="checkmark"></span>
+                  </label>
+                  <?php 
+               }
+               else
+               { 
+                  ?>
+                  <div style="text-align:center;width:100%;"  onclick="showSelectUsers(<?php echo $row["_id"] ?>);"><?php echo $AssignedTo ?></div><div id='divSelectUser<?php echo $row["_id"] ?>' style='display:none;margin-left:auto;margin-right:auto;'>
+                  <div class="dropdown show">
+                  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color:#07ff10;color:black;font-weight:bold;">Re-asign too
+                  </a>      
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" >
+                  <a class='dropdown-item' href='#' onclick="document.getElementById('divSelectUser<?php echo $row["_id"] ?>').style.display='none';">Cancel</a>
+                  <?php
+                  foreach ($arUsers as $value) 
                      {
-                        echo "<a href='" . $Image ."' target='_blank'><img src='".$Image."' alt='". $UnitName ."' style='width:100px;height:100px;'></a>";
+                        echo "<a class='dropdown-item' href='".$_SERVER['SCRIPT_NAME']."?action=reassign_task&assignedto=".$UserName."&reassignto=".$value."&id=".$row["_id"]."'>".$value."</a>";
+                     }
+                  echo "</div></div></td>";
+               }
+               ?>
+               <td style='<?php echo $myCss ?>;text-align:center;'>
+               <label class="switch">
+               <input type="checkbox" id="ckShowFilterTypes<?php echo $row["_id"] ?>" onChange="showFilterTypes('<?php echo $row["_id"] ?>');">
+               <span class="slider round"></span>
+               </label></checkbox>
+               <?php $myURL = "ListEquipment.php?action=unitdone&filter_rotation=".$row["filter_rotation"]."&unit_id=".$row["_id"]."&unit_name=".$row["unit_name"]."&filter_size=".$row["filter_size"]."&filters_used=".$row["filter_size"]."&filters_due=".$row["filters_due"]; ?>
+               <br>
+               <div class="dropdown d-none" id="slctFilterTypes<?php echo $row["_id"] ?>">
+               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  select filter used
+               </button>
+               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+               <?php
+               foreach ($arFilterTypes as $value) {
+                  echo "<a class='dropdown-item' href='".$myURL."&filter_type=".$value."'>".$value."</a>";
+            }
+            ?>
+            <a class='dropdown-item' href='<?php echo $myURL ?>&filter_type=no_filters_used'>No filters used</a>
+            </div>
+            </div>
+            <A style="display:none;" id="ahref<?php echo $row["_id"] ?>" href="ListEquipment.php?action=unitdone&username=<?php echo $UserName ?>&filter_rotation=<?php echo $row["filter_rotation"] ?>&unit_id=<?php echo $row["_id"] ?>&unit_name=<?php echo $row["unit_name"] ?>&filter_size=<?php echo $row["filter_size"] ?>&filters_used=<?php echo $row["filter_size"] ?>&filters_due=<?php echo $row["filters_due"] ?>" style="font-weight: bold;font-size: 50px;color:white;background-color:gold;height:170px;width:100%;"><div style="font-weight: bold;font-size: 50px;background-color:white;height:50px;">SUBMIT</div></A>
+            </td>
+            <td style="<?php echo $myCss ?>" id='info'>
+            <a href="#" onclick="showinfo('tblUnitInfo<?php echo $row["_id"] ?>', '<?php echo $row["unit_name"] ?>','<?php echo $row["_id"] ?>'); CanYouShare('tdShare<?php echo $row["_id"] ?>','<?php echo $row["unit_name"] ?>','<?php echo $row["_id"] ?>');"> <div style="<?php echo $myCss ?>;text-align:center;width:100%;" id='mydiv<?php echo $row["_id"] ?>'>
+				<?php echo $row["unit_name"] ?></div></a>
+            <table style="display:none;" id="tblUnitInfo<?php echo $row["_id"] ?>">
+            <tr id = "trinfo"><td><div class="bg-info" style="box-shadow: 4px 4px black;border-radius:10px;height:25px;text-align:center;font-weight:bold;"  name="checkbox" value="value" id="checkCloseInfo<?php echo $row["_id"] ?>" title="Close information window for <?php echo $row["unit_name"] ?>" onclick="closeinfo('<?php echo $row["_id"] ?>');">CLOSE</div>
+            </td><td></td>
+            </tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;">Unit name</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $row["unit_name"] ?></td></tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;">Assigned too</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $AssignedTo ?></td></tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;">Location</td><td class="tdUnitInfo2" style="text-align:left;"><div id="divLocation" style="max-height: 70px; overflow-y: auto;"><?php echo $row["location"] ?></div></td></tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;">Area served</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo  $row["area_served"] ?></td></tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;">Filter size</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $row["filter_size"] ?></td></tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;">Filter type</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $row["filter_type"] ?></td></tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;width:100px;"> Filters due</td><td class="tdUnitInfo2" style="cursor:grab;text-align:left;" onclick="editUnit('<?php echo $row["_id"] ?>', 'filters_due');document.getElementById('modalDate').value='<?php echo $row["filters_due"] ?>';"><?php echo $row["filters_due"] ?></td></tr>
+               <tr><td class="tdUnitInfo" style="text-align:left;">Filters last changed</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $row["filters_last_changed"]?></td></tr>
+               <tr><td class="tdUnitInfo" style="text-align:left;">Rotation</td><td class="tdUnitInfo2" style="text-align:left;"><?php echo $row["filter_rotation"] ?></td></tr>
+            <tr><td class="tdUnitInfo" style="text-align:left;">Belts</td><td class="tdUnitInfo2" style="text-align:left;"> <?php echo $row["belts"] ?></td></tr>
+               <tr><td class="tdUnitInfo" style="text-align:left;">Notes</td><td class="tdUnitInfo2" style="text-align:left;" onclick="editUnit('<?php echo $row["_id"] ?>', 'notes');document.getElementById('txtNotes').value=document.getElementById('divNotes<?php echo $row["_id"] ?>').innerHTML;"><div id="divNotes<?php echo $row["_id"] ?>" class="wrapper" style="cursor:grab;"><?php echo $row["notes"] ?></div><textarea style="display:none;color:white;" id="editNotes<?php echo $row["_id"] ?>" class="wrapper" onkeyup="document.getElementById('aEditNotes<?php echo $row["_id"] ?>').href='<?php echo $_SERVER["SCRIPT_NAME"] ?>?unitid=<?php echo $row["_id"] ?>&notes='+document.getElementById('editNotes<?php echo $row["_id"] ?>').value+'&field=notes&action=editunit';"><?php echo $row["notes"] ?></textarea><a href="" id="aEditNotes<?php echo $row["_id"] ?>"><button style="display:none;" type="button" id="editNotesSubmit<?php echo $row["_id"] ?>" class="btn btn-Success">Save</button></a></td></tr>
+               <tr><td class="tdUnitInfo" style="text-align:left;">
+               <a href="webEditUnit.php?_id=<?php echo $row["_id"] ?>"><div class="btn btn-warning" title="Edit <?php echo $row["unit_name"] ?> properties" style="box-shadow: 4px 4px black;">EDIT UNIT</div></a>
+                                 
+               </td><td id="tdShare<?php echo $row["_id"] ?>" class="tdUnitInfo" style="text-align:left;">              
+                   
+                   <?php 
+                   if ($row["image"] != null)
+                     {
+                        echo "<a href='" . $row["image"] ."' target='_blank'><img src='".$row["image"]."' alt='". $row["unit_name"] ."' style='width:100px;height:100px;'></a>";
                      }
                      ?>
                      </td></tr>
@@ -1022,165 +993,120 @@ if(strcmp($UserName, "")==0 || strcmp($UserName, "none")==0)
                 <?php
                 if(strcmp($_SESSION["field2"], "Location")==0)
                   {
-                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'><div style='margin-left:auto;margin-right:auto;text-align:left;width:20vw;'>". $Location."</div></td>";
+                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'>". $row["location"]."</td>";
                   }
                 if(strcmp($_SESSION["field2"], "Area Served")==0)
                   {
-                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'>". $AreaServed ."</td>";
+                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'>". $row["area_served"] ."</td>";
                   }
                 if(strcmp($_SESSION["field2"], "Last Changed")==0)
                   {
-                     echo "<td style='".$myCss."'>". $FiltersLastChanged ."</td>";
+                     echo "<td style='".$myCss."'>". $row["filters_last_changed"]."</td>";
                   }
                 if(strcmp($_SESSION["field3"], "Location")==0)
                   {
-                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'>". $Location."</td>";
+                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'>". $row["location"]."</td>";
                   }
                 if(strcmp($_SESSION["field3"], "Area Served")==0)
                   {
-                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'>". $AreaServed ."</td>";
+                     echo "<td style='".$myCss.";width:25vw;white-space: initial;'>". $row["area_served"] ."</td>";
                   }
                   if(strcmp($_SESSION["field3"], "Last Changed")==0)
                   {
-                     echo "<td style='".$myCss."'>". $FiltersLastChanged ."</td>";
+                     echo "<td style='".$myCss."'>". $row["filters_last_changed"]."</td>";
                   }
                   if(strcmp($_SESSION["field3"], "Notes")==0)
                   {
-                     if(strlen($Notes) >= 12)
+                     if(strlen($row["notes"]) >= 12)
                         {
-                           ?><td style='<?php echo $myCss ?>;cursor:grab;'><div style='border:2px solid white;overflow:auto;max-width:120px;max-height:50px;' onclick="editUnit('<?php echo $unitId ?>', 'notes');document.getElementById('txtNotes').value='<?php echo $Notes ?>'"><?php echo $Notes ?></div></td><?php
+                           ?><td style='<?php echo $myCss ?>;cursor:grab;'><div style='border:2px solid white;overflow:auto;max-width:120px;max-height:50px;' onclick="editUnit('<?php echo $row["_id"] ?>', 'notes');document.getElementById('txtNotes').value='<?php echo $row["notes"] ?>'"><?php echo $row["notes"] ?></div></td><?php
                         }
                         else
                         {
-                           ?><td style='<?php echo $myCss ?>;cursor:grab;' onclick="editUnit('<?php echo $unitId ?>', 'notes');document.getElementById('txtNotes').value='<?php echo $Notes ?>';"><?php echo $Notes ?></td><?php
+                           ?><td style='<?php echo $myCss ?>;cursor:grab;' onclick="editUnit('<?php echo $row["_id"] ?>', 'notes');document.getElementById('txtNotes').value='<?php echo $row["notes"] ?>';"><?php echo $row["notes"] ?></td><?php
                         }
                   }
                   if(strcmp($_SESSION["field3"], "Filter Size")==0)
                   {
                         
-                      $outofstock = getFilterCount($FilterSize,$result);
-						   //$outofstock=getFilterCount($fs, $result);
+                      $outofstock = getFilterCount($row["filter_size"],$arFiltersOOS);
+						   //$outofstock=getFilterCount($fs, $arFiltersOOS);
                      $myCss=getCss($Theme,$daysoverdue,$outofstock);
                      $myCss ."font-family:".$_SESSION["font_family"];
                      $AlCss=GetAlinkCss($Theme,$daysoverdue,$outofstock);
                      $AlCss = $AlCss . ";font-family:".$_SESSION["font_family"];
-						  // echo "myCss=".$myCss." theme=".$Theme." days=".$daysoverdue." size=".$FilterSize." oos=".$outofstock." Alink font color:".$AlCss."<br>";
+						  // echo "myCss=".$myCss." theme=".$Theme." days=".$daysoverdue." size=".$row["filter_size"]." oos=".$outofstock." Alink font color:".$AlCss."<br>";
                      //REMOVE AMOUNT FROM FILTERSIZE FOR BOOKMARK HYPERLINK TO FILTERS PAGE
-                     $NumberOfFilters = substr_count($FilterSize,"(");
+                     $NumberOfFilters = substr_count($row["filter_size"],"(");
                      $B=0;
-                     echo "<td style='".$myCss."'><div style='text-align:center;margin-left:auto;margin-right:auto;'>";
                      if($NumberOfFilters == 1)
-                        {
-                        $myfilter = $FilterSize;
-                        $x = strpos($myfilter, ")",0);
-                        $myfilter = substr($myfilter, $x + 1, strlen($myfilter)- $x);
-                        $myfilter_id = $myfilter . $FilterType;
-                        $myfilter_id = str_replace(" ","",$myfilter_id);
-                        echo "<a href='web_update_filters.php?searchfilterid=".$myfilter ."' style='".$AlCss."';>". $FilterSize . "</a>";
-                        }
-                     else
-                        {
-                        $arfilters = explode(" ", $FilterSize);
-                        foreach ($arfilters as $value) 
-                        {
-                           $B=$B+1;
-                           if($B <= 2)
                            {
-                           $myfilter = $value;
+                           $myfilter = $row["filter_size"];
                            $x = strpos($myfilter, ")",0);
-                           $myfilteronly = substr($myfilter, $x + 1, strlen($myfilter)- $x);
-                           $numoffilters=substr($myfilter, 0, $x + 1);
-                           echo "<a href='web_update_filters.php#".$myfilteronly .$FilterType."' style='".$AlCss."';>". $numoffilters.$myfilteronly. "<br>". "</a>";
+                           $myfilter = substr($myfilter, $x + 1, strlen($myfilter)- $x);
+                           $myfilter_id = $myfilter . $row["filter_type"];
+                           $myfilter_id = str_replace(" ","",$myfilter_id);
+                           ?>
+                           <td style="<?php echo $myCss ?>"><a href="#" style="<?php echo $AlCss ?>" onclick="getFilter('<?php echo $myfilter ?>');"><?php echo $row["filter_size"] ?></a></td>
+                           <?php
                            }
-                        }
-                        echo "</div></td>";
+                        else
+                           {
+                              $arfilters = explode(" ", $row["filter_size"]);
+                              echo "<td style='".$myCss."'>";
+                              foreach ($arfilters as $value) 
+                              {
+                                 $B=$B+1;
+                                 if($B <= 2)
+                                 {
+                                 $myfilter = $value;
+                                 $x = strpos($myfilter, ")",0);
+                                 $myfilteronly = substr($myfilter, $x + 1, strlen($myfilter)- $x);
+                                 $numoffilters=substr($myfilter, 0, $x + 1);
+                                 ?>
+                                 <a href="#" onclick="getFilter('<?php echo $myfilteronly ?>');" style="<?php echo $AlCss ?>"> <?php echo $numoffilters.$myfilteronly ."</a><br>" ?>
+                                 <?php
+                                }
+                              }
+                     echo "</td>";
                     }                    
                   }
 
                 ?>
-                <td style="<?php echo $myCss ?>"><div style="text-align:center;cursor: grab;" onclick="editUnit('<?php echo $unitId ?>');"><?php echo $FiltersDue ?></div></td>
+                <td style="<?php echo $myCss ?>"><div style="cursor: grab;" onclick="editUnit('<?php echo $row["_id"] ?>', 'filters_due');document.getElementById('modalDate').value='<?php echo $row["filters_due"] ?>';"><?php echo $row["filters_due"] ?></div></td>
 
                 </tr>
 
             <?php
-
-        }
-    }
-    
-    //$stmt->close();
-    
+ }
+   }
+   else
+   {
+      echo "<div style='width:100%;background-color:green;color:white;'>You currently have no units in your database. click <a href='webAddUnit.php'>HERE</a> to start in putting data for your air conditioning units and there filter change times.</div>";
+   }
      ?>
   
     
      
 </table>
-</div>
 <div style="display:none;" id="equipmentlist" style="back-color:white;color:black;"><font color="white"><?php echo $EquipmentList ?></div>
 <?php 
-echo  $X . " units in returned by query."; 
+echo  count($equipment) . " units in returned by query."; 
 
 
-function getFilterCount($fsize, &$result)
+function getFilterCount($fsize, &$arFiltersOOS)
 {
-//echo "from function fsize=".$fsize."<br>";
-   foreach($result as $side=>$direc)
+if(is_array($fsize)){
+   foreach($arFiltersOOS as $size)
       {
-      //echo $fsize . "=" . $direc["filter_size"]."<br>";
-         if(strpos($fsize, $direc["filter_size"]) > 0)
+      //echo $fsize . "=" . $size."<br>";
+         if(strpos($fsize, $size) > 0)
             {
               return "outofstock";
             }
       }
 }
-function AddTask2($UserName, $unitid,$UnitName,$filters, $filterrotation, $filtersdue)
-{
-    $link = mysqli_connect("MYSQL5013.site4now.net","a3f5da_lobby","relays82","db_a743b0_cannery");
-     echo "AddTask2<br>";
-    // Check connection
-    if($link === false)
-    {
-        die("ERROR: Could not connect. " . mysqli_connect_error());
-    }
- 
-    // Prepare an insert statement
-    $sql = "INSERT INTO tasks2 (_id, employee_name, unit_name, task_date_created, filters_needed, unit_id, filter_rotation, filters_due) VALUES (?,?,?,?,?,?,?,?)";
-    $date_created=date("Y-m-d");
-    if($stmt = mysqli_prepare($link, $sql))
-       {
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "isssssss",$_id, $employee_name, $unitid, $task_date_created, $filters, $UnitName, $filterrotation, $filtersdue);
-    
-            // Set parameters
-            $_id='';
-            $employee_name=$UserName;
-            $unit_name=$unitid;
-            $task_date_created=$date_created;
-            $filters_needed=$filters;
-            $unit_id = $unitid;
-            $filter_rotation=$filterrotation;
-            $filters_due=$filters;
-    
-            // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt))
-                {
-                    //echo "Affected rows: " . mysqli_affected_rows($link)."<br>";
-                    echo "Records inserted successfully.";
-                } 
-                else
-                {
-                echo "ERROR: Could not execute query: $sql. " . mysqli_error($link);
-                }
-        } 
-        else
-        {
-            echo "ERROR: Could not prepare query: $sql. " . mysqli_error($link);
-        }
-    // Close statement
-    mysqli_stmt_close($stmt);
-    // Close connection
-    mysqli_close($link);
 }
-
 function getCss($theme,$daysoverdue,$outofstock)
 {
 	//echo "theme=".$theme." days=".$daysoverdue." oos=".$outofstock."<br>";
@@ -1284,30 +1210,6 @@ function getAlinkCss($theme,$daysoverdue,$outofstock)
 	return $AlinkCss;
 }
 
-
-function AddTask($con, $user, $unitid)
-    {
-        //echo var_dump($_POST);
-	    //echo "AddTask<br>";
-        if (isset($_POST['action'])=="addtask") 
-            {
-                if (isset($_COOKIE["user"])) 
-                    {
-                      $UserName = $_COOKIE["user"];
-                      //echo "COOKIE username=". $UserName."<BR>";
-                    }        
-   
-                $sql="UPDATE equipment  SET assigned_to ='".$user."' WHERE _id='". $unitid ."';";
-                 //mysqli_select_db($con, 'db_a743b0_cannery');
-                if ($retval=mysqli_query($con2, $sql))
-                    {
-                        //echo "<br>" .$UnitName . " was added to your tasks<br>";
-                    }
-                
-            }
-
-}
-
 function s_datediff( $str_interval, $dt_menor, $dt_maior, $relative=false)
 {
 
@@ -1347,9 +1249,71 @@ function s_datediff( $str_interval, $dt_menor, $dt_maior, $relative=false)
 
 ?>
 <script>
+function IsThere(element) {
+   if(document.getElementById(element) === null || document.getElementById(element) === undefined)
+   {
+      return false;
+   }
+   else
+   {
+      return true
+   }}
+
+                   function CanYouShare(tdID, UnitName, UnitID)  {                    
+                     if (IsThere("shareButton"+UnitID) === false) 
+                        {
+                           const shareButton = document.createElement("img");
+                           shareButton.setAttribute("id", "shareButton"+UnitID);
+                           shareButton.setAttribute("style", "margin-left:50px;box-shadow: 5px 5px 10px black;border-radius:50%;");
+                           shareButton.setAttribute("src", "images/share.jpg");
+                           shareButton.setAttribute("onclick", "share('"+ UnitName + "', '"+UnitID + "');");
+                           elem = document.getElementById(tdID);
+                           elem.appendChild(shareButton);
+                           shareButton.style.display = "inline-block";
+                           shareButton.style.width = "70px";
+                           shareButton.style.height = "70px";
+                        }
+                   }
+                   </script>
+                   <script>
+                   function share(unit_name, unit_id)
+                   {
+                     if (navigator.share) {
+                     const shareData = {
+                        title: "Info for " + unit_name,
+                        text: "Info brought to you by FilterManager",
+                        url: "https://filtermanager.net/share.php?id="+ unit_id+"&folder=<?php echo $_SESSION["backup_folder"] ?>",
+                     };
+
+                     navigator.share(shareData)
+                        .then(() => console.log("Content shared successfully!"))
+                        .catch((error) => console.error("Error sharing:", error));
+                  } else {
+                     console.error("Sharing API not supported in this browser.");
+                  } 
+                             
+                   }
+</script>
+<script>
+function getFilter(filtersize){
+   console.log("starting getfilter");
+var filterData = {
+         type: '',
+         size: '',
+         by: "searchwords",
+         searchwords: filtersize,
+         lastupdated: ""
+         };
+    var jsonString = JSON.stringify(filterData);
+   setJavaCookie("filters_lastquery", jsonString,1);  
+   location.href="web_update_filters.php";       
+}
+
+</script>
+<script>
    function reAssignTask(id,assignedto){
       reassignto=document.getElementById("slctAssignTo").value;
-      window.location = "<?php echo $_SERVER['SCRIPT_NAME'] ?>?action=edit_task&assignedto="+assignedto+"&reassignto="+reassignto+"&id="+id;
+      window.location = "<?php echo $_SERVER['SCRIPT_NAME'] ?>?action=reassign_task&assignedto="+assignedto+"&reassignto="+reassignto+"&id="+id;
    }
 </script>
 <script>
@@ -1388,6 +1352,18 @@ saveTasksToCookie();
 }
 </script>
 
+
+<script>
+function setCookie2(cookiename, cookievalue){
+   var now = new Date();
+  var time = now.getTime();
+  now.setFullYear(now.getFullYear() +10);//ten years
+    //document.cookie = 'myCookie=to_be_deleted; expires=' + now.toUTCString() + ';';
+  //document.cookie = "username=John Doe; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
+  document.cookie = cookiename+"="+cookievalue+";expires="+now.toUTCString()+";path=/";
+  //alert("done setCookie2 cookiename="+cookiename+" cookievalue="+getCookie(cookiename));
+}
+</script>
 <script>
     function myFunction() {    
 	     
@@ -1420,8 +1396,39 @@ saveTasksToCookie();
         }
 		}
     }
+    
 </script>
-   
+<script>
+   function updateDidYouKnow() {
+//  const username = "<?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : ''; ?>";
+  const lineNumber = document.getElementById('txtDidYouKnowLineNumber').value;
+
+  // Validate input (optional)
+  if (!username || !lineNumber) {
+    alert("Please enter a username and line number.");
+    return;
+  }
+
+  // Prepare AJAX request
+  const xhr = new XMLHttpRequest();
+  const url = "didYouKnow.php?line_number=" + lineNumber;
+
+  xhr.open("GET", url, true); // GET request, asynchronous
+
+  // Handle response
+  xhr.onload = function() {
+    if (xhr.status === 200) { // Success
+      const response = xhr.responseText;
+      document.getElementById("divDidYouKnow").innerText =  response; // Or display response to user (optional)
+    } else {
+      document.getElementById("divDidYouKnow").innerText ="Error:", xhr.statusText; // Handle errors
+    }
+  };
+
+  // Send the request
+  xhr.send();
+}
+</script>
 
 </body>
 </html>

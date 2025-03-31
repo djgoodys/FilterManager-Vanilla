@@ -45,6 +45,30 @@ font-family: <?php echo $FontFamily ?>;
 font-size: <?php echo $FontSize ?>px;
 }
 
+
+
+#divClickMe::after{
+  content: "";
+  display: block;
+  color:white;
+  background-color: black;
+  height: 20px;
+  width: 20px;
+  transform: rotate(45deg);
+  position: relative;
+  top:8px;
+  left: 30px;
+  }
+
+#divClickMe{
+  color:white;
+  background-color:black;
+  width:fit-content;
+  margin:2px 0 0 205px;
+  padding:2px;
+
+}
+
 .container input {
   position: absolute;
   opacity: 0;

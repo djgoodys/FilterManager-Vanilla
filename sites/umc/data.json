@@ -1,0 +1,81 @@
+{
+    "equipment": [],
+    "filters": [
+        {
+            "_id": 1,
+            "filter_size": "24x24x2",
+            "filter_type": "Paper",
+            "filter_count": "100",
+            "par": "200",
+            "pn": "",
+            "storage": "",
+            "notes": null,
+            "date_updated": "2025-03-30"
+        },
+        {
+            "_id": 2,
+            "filter_size": "24x24x12",
+            "filter_type": "Paper",
+            "filter_count": "44",
+            "par": "11",
+            "pn": "",
+            "storage": "",
+            "notes": null,
+            "date_updated": "2025-03-30"
+        },
+        {
+            "_id": 3,
+            "filter_size": "11x12x2",
+            "filter_type": "Paper9",
+            "filter_count": "11",
+            "par": "22",
+            "pn": "2",
+            "storage": "",
+            "notes": null,
+            "date_updated": "2025-03-30"
+        },
+        {
+            "_id": 4,
+            "filter_size": "11x12x12",
+            "filter_type": "Paper9",
+            "filter_count": "11",
+            "par": "22",
+            "pn": "2",
+            "storage": "",
+            "notes": "this is notes",
+            "date_updated": "2025-03-30"
+        }
+    ],
+    "storage": [
+        {
+            "_id": 1,
+            "location": "MEC Mez"
+        }
+    ],
+    "filter_orders": [],
+    "filter_types": [
+        {
+            "_id": 1,
+            "type": "Paper",
+            "trackable": "yes"
+        },
+        {
+            "_id": 2,
+            "type": "test",
+            "trackable": "yes"
+        },
+        {
+            "_id": 3,
+            "type": "Washable",
+            "trackable": "yes"
+        },
+        {
+            "_id": 4,
+            "type": "Washable2",
+            "trackable": "yes"
+        }
+    ],
+    "misc": {
+        "checkout_session_id": ""
+    }
+}

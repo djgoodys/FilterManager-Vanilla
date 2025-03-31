@@ -202,26 +202,32 @@ if(strcmp($Action, "save_company_name")==0){
            }
           
    }
-//GET DATE OF LAST DATA BACK UP
-$sql = "SELECT * FROM misc ORDER BY _id DESC LIMIT 1";
-   
-    if ($result = $con->query($sql)) 
+
+  //GET DATE OF LAST DATA BACK UP
+  //echo "backup folder=". $_SESSION["backup_folder"];
+  $jsonData = file_get_contents("sites/" . $_SESSION["backup_folder"] . "/data.json");
+  $data = json_decode($jsonData, true); 
+
+  $LastBackup  = $data['misc'][0]['last_backup'];
+ 
+      if(is_null($data['misc'][0]['company_image']) == 1)
         {
-             while ($row = $result->fetch_assoc()) 
-                {
-                   $LastBackup = $row["last_backup"];  
-                   if(is_null($row["company_image"]) == 1)
-                   {
-                    $CompanyImage = "your_co_logo";
-                  }
-                  else
-                  {
-                    $CompanyImage = $row["company_image"];
-                  }
-                  // echo "CompanyImage=".$CompanyImage."<br>". "after=".$CompanyImage;
-                   if(is_null($row["company_name"]) == 1){$CompanyName = "Your company name";}else{$CompanyName = $row["company_name"];}
-                }
+          $CompanyImage = "your_co_logo";
         }
+        else
+        {
+          $CompanyImage = $data['misc'][0]['company_image'];
+        }
+         //echo "CompanyImage=".$CompanyImage."<br>". "after=".$CompanyImage;
+          
+        if(is_null($data['misc'][0]["company_name"]) == 1)
+          {
+            $CompanyName = "Your company name";
+          }else{
+            $CompanyName = $data['misc'][0]["company_name"];
+          }
+        
+        
 
         //----------------NEW EMAIL----------------
 $NewEmail="";

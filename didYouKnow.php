@@ -10,19 +10,17 @@ function updateDidYouKnow($LineNumber) {
   $data = json_decode(file_get_contents($fileName), true);
 
   if (json_last_error() !== JSON_ERROR_NONE) {
-    // Handle JSON decode error (optional)
     return false;
   }
 
-  // Find user by username
-  foreach ($data as &$user) { // Use reference to modify user data within the loop
+  foreach ($data as &$user) { 
     if ($user['user_name'] == $_SESSION["user_name"]) {
         foreach ($user['didYouKnow'] as $index => $value) {
             
             if ($index == intval($LineNumber)) {
                 //echo  "LineNumber=".$LineNumber."<br>".$user['didYouKnow'] [$index]."<br>";
-                $user['didYouKnow'] [$index] = "dont_show"; // Update value directly using reference
-              break; // Exit loop after finding the line
+                $user['didYouKnow'] [$index] = "dont_show"; 
+              break; 
             }
           }
           

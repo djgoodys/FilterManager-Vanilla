@@ -1170,6 +1170,7 @@ if(strcmp($Action, "login")==0 && $UserNamePassed == "")
       $_SESSION['field3'] = $user["field3"];
       $_SESSION['backup_folder'] = $user["backup_folder"]; 
       $_SESSION["admin"] = $user["admin"];
+      $_SESSION["clickme"] = $user["clickme"];
       if(isset($_SESSION["theme"]) == "td-DarkPlain")
         {
           $_SESSION["background_color"] = "black";

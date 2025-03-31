@@ -6,7 +6,7 @@ if(session_id() == ''){
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-include('dbMirage_connect.php');
+
 ?>
 <html>
     <title>Filter Manager- change email</title>
@@ -57,7 +57,7 @@ if(strcmp($Action, "update_email")==0)
        $jsonString = file_get_contents('table_users.json');
           $data = json_decode($jsonString, true);
           foreach ($data as &$object) {
-              if ($object['user_name'] === $_SESSION["user_name"]) {
+              if (isset($object['user_name']) && $object['user_name'] === $_SESSION["user_name"]) {
                   // Change the value of the specified key
                   $object['Email'] = $NewEmail;
               }

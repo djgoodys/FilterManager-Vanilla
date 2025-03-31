@@ -7,8 +7,7 @@ require 'src/PHPMailer.php';
 require 'src/SMTP.php';
 //print_r($_POST);
 $CreatedSuccess = "";
-function getUniqueID()
-{
+function getUniqueID(){
     $jsonString = file_get_contents('table_users.json');
     $data = json_decode($jsonString, true);
     $maxId = 0;
@@ -28,33 +27,29 @@ function getUniqueID()
         }
     }
     return $maxId;
-}
-
-    if(isset($_POST['app_admin_name'])) 
-      {
-        $AppAdminName = $_POST['app_admin_name'];
+    }
+    if(isset($_POST['app_admin_name'])) {
+      $AppAdminName = $_POST['app_admin_name'];
+      setcookie("app_admin_name", $_POST['app_admin_name'], time() + 60 * 60 * 24, "/", "", false, true);
       }
-    if(isset($_POST["app_admin_password"])) 
-      {
-        $AppAdminPassword = $_POST['app_admin_password'];
+    if(isset($_POST["app_admin_password"])) {
+      $AppAdminPassword = $_POST['app_admin_password'];
+      setcookie("app_admin_password", $_POST['app_admin_password'], time() + 60 * 60 * 24, "/", "", false, true);
       }
 if(isset($_POST['action'])) {$Action = $_POST['action'];}
-$Checkout_Session_ID ="none";
 if (isset($_POST["checkout_session_id"])){$Checkout_Session_ID = $_POST["checkout_session_id"];}
 if ($Action == "sign_up") {
-    //setcookie("BusinessName", $_POST['BusinessName'], time() + 60 * 60 * 24, "/", "", false, true);
-    $BusinessName = $_POST['BusinessName'];
-    $BusinessNameLowerCase = strtolower(trim($_POST['BusinessName']));
-    $BusinessNameNoSpaces = str_replace(' ', '_', $BusinessNameLowerCase);
+    setcookie("business_name", $_POST['business_name'], time() + 60 * 60 * 24, "/", "", false, true);
+    $BusinessName = strtolower(trim($_POST['business_name']));
+    $BusinessName = str_replace(' ', '_', $BusinessName);
     $Email = strtolower($_POST['email']);
     $sitesFolder = "sites";
-    $currentDate = date('Y-m-d');
-    $customerFolder = $sitesFolder . "/" . $BusinessNameNoSpaces;
+    $customerFolder = $sitesFolder . "/" . $BusinessName;
     if (!is_dir($customerFolder)) {
       // Create the folder if it doesn't exist
       if (mkdir($customerFolder, 0775, true)) {
         $_SESSION["folder_created"] = true;
-      $filePath = 'sites/'. $BusinessNameNoSpaces.'/data.json';
+      $filePath = 'sites/'. $BusinessName.'/data.json';
       $data = array(
       "equipment" => array(),
       "filters" => array(),
@@ -62,19 +57,15 @@ if ($Action == "sign_up") {
       "filter_orders" => array(),
       "filter_types" => array(),
       "misc" => array(
-        "checkout_session_id" => $Checkout_Session_ID,
-        "last_backup" => "", 
-        "company_name" => $BusinessName, 
-        "company_image" => "",
-        "trial_start_date" => $currentDate,
-        "subscription_start_date" => "")
+        "checkout_session_id" => $Checkout_Session_ID
+      )
       );
   
       if (!file_exists($filePath)) 
           {
               $json = json_encode($data, JSON_PRETTY_PRINT);
               $CreatedSuccess = false;
-              if (file_put_contents($filePath, $json) == false) 
+              if (file_put_contents($filePath, $json) === false) 
                   {
                       echo "Error creating file: $filePath";
                   } 
@@ -94,56 +85,39 @@ if ($Action == "sign_up") {
         echo "Error creating folder for customer: $BusinessName";
       }
     } else {
-      $BusinessNameNoSpaces = str_replace(' ', '_', $BusinessName);
+      $bName = str_replace('_', ' ', $BusinessName);
       echo "business name already exists";
     }
   $id = getUniqueID();
       $jsonString = file_get_contents('table_users.json');
       $data = json_decode($jsonString, true);
-      $today = date("Y-m-d");
       $newUser = array(
           '_id' => $id,
           'user_name' => $AppAdminName,
           'password' => $AppAdminPassword,
-          'Email' => $Email,
+          'email' => $Email,
           'admin' => 'yes',
           'field2' => "",
           'field3' => "",
           'font_family' => "",
           'font_size' => "",
           'theme' => "",
-          'backup_folder' => $BusinessNameNoSpaces,
+          'backup_folder' => $BusinessName,
           "misc" => array(
-            "checkout_session_id" => $Checkout_Session_ID,
-            "trial_start_date" => $today,
-            "mode" => "trial"
-          ),
-        "didYouKnow" => array(
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-        ),
-        "background_color" => "white",
-        "font_color" => "black"
+            "checkout_session_id" => $Checkout_Session_ID
+          )
       );
       $data[] = $newUser;
       $jsonString = json_encode($data, JSON_PRETTY_PRINT);
       file_put_contents('table_users.json', $jsonString);
-      
+  
   }
 
   if($CreatedSuccess == true)
   {
- 
+
    $EmailBody = "<table style='border-collapse: collapse;color:green;'><tr style='border: 1px solid aqua'><td>You FilterManager app address is: </td><td>filtermanager.net
-    </td><tr><td>Your company is registered under the name:</td><td>".$_POST['BusinessName'] ."</td></tr>
+    </td><tr><td>Your company is registered under the name:</td><td>".$_POST['business_name'] ."</td></tr>
     <tr><td>Your username for access is:</td><td>".$_POST['app_admin_name'] ."</td></tr><tr><td>Your password is:</td><td>". $_POST['app_admin_password'] ."</td></tr><tr><td>Your email:</td><td>". $Email ."</td></tr></table>Click <a href='https://www.filtermanager.net'>HERE</a> to log into your app.";
    try {
   //Server settings
@@ -178,18 +152,8 @@ $mail->addAddress('admin@filtermanager.net', 'David');     //Add a recipient
   $mail->AltBody = $AltBody;
 
   $mail->send();
-  //setcookie("checkout_session_id", "true", time() + 3600, "/");
-
-  $data = array(
-  "app_admin_name" => $AppAdminName,
-  "app_admin_password" => $AppAdminPassword,
-  "email" => $Email,
-  "business_name" => $BusinessName,
-  "setup_complete" => "true",
-);
-$json_data = json_encode($data);
-
-echo $json_data;
+  setcookie("checkout_session_id", "true", time() + 3600, "/");
+  echo 'setup_complete';
 } catch (Exception $e) {
   echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
 } 

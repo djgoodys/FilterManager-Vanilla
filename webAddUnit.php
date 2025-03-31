@@ -197,7 +197,7 @@ if(strcmp($Theme,"Light-tdPlain")==0)
 }
 
 
-include 'dbMirage_connect.php';
+
 include 'phpfunctions.php';
 include 'snackbar.css';
 include "javafunctions.php";
@@ -229,9 +229,6 @@ $data = json_decode($jsonString, true);
 //foreach ($_POST as $param_name => $param_val) {
   //  echo "Param: $param_name; Value: $param_val<br />\n";
 //}
-if(is_array($arFilters) && count($arFilters) < 1){
-    echo "<div style='background-color:green;color:white'>You need to create at least one filter size before creating a unit. Click <a href='web_update_filters.php'>HERE<a></div>";
-}
 $visibility ="none";
 $UnitNameFound="none";
 $row_cnt=0;

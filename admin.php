@@ -262,9 +262,8 @@ if($Action == "Add user"){
 $Users=array();
 $jsonString = file_get_contents('table_users.json');
 $data = json_decode($jsonString, true);
-$Users = array();
 foreach ($data as $object) {
-    $Users[] = $object['user_name'];
+    if(isset( $object['user_name']) && $_SESSION["backup_folder"] === $object["backup_folder"]) {$Users[] = $object['user_name'];}
 }
 //print_r($Users);
 

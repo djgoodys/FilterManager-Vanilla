@@ -111,10 +111,9 @@ function ckIfFilterExists(filterSize, filterType)
 </script>
 <script>
 function validateForm() {
-var formReady = true;
-var errorcode = "";
-
-
+  snackbar = document.getElementById("divSnackBar");
+  var formReady = true;
+  var errorcode = "";
   var x = document.forms["frmAddNewFilter"]["filtersize"].value;
   
 
@@ -152,11 +151,12 @@ if (x == "" || y == "" || z == "") {
   }
 
 if(formReady == false){
-   var snackbar = document.getElementById("snackbar");
+   var snackbar = document.getElementById("divSnackBar");
     snackbar.innerHTML = errorcode;
     snackbar.className="bg-danger text-white w-50";
-     snackbar.className = "show";
-   setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+     snackbar.className = "snackbar show";
+     snackbar.style.top = 0;
+   //setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
 }
 else{
     document.getElementById("frmAddNewFilter").submit();
@@ -215,7 +215,7 @@ if(strlen($FilterSize) > 0){$fsizes = explode("x", $FilterSize);}
 <tr><td></td><td><b>Add New Filter Size</b></td><tr>
             <td><form method="POST" name="frmAddFilter" action="web_add_filter.php" id="frmAddNewFilter"></td>
             <tr><td class="<?php echo $TDstyle ?>">Create Filter size</td>
-            <td class="<?php echo $TDstyle ?>">width&nbsp;&nbsp;<input type='text' onkeyup='setfilters(this.id);' maxlength='4' style='font-weight: bold; overflow: hidden; max-width: 6ch;text-align:center;' id='fsize1' name='fsize1' value='<?php echo $fsizes[0] ?>'>&nbsp;height&nbsp;&nbsp;<input type='text' onkeyup='setfilters(this.id);' onfocus="$(this).select();" maxlength='4' style='font-weight: bold; overflow: hidden; max-width: 6ch;text-align:center;' id='fsize2' name='fsize2' value='<?php echo $fsizes[1] ?>'>&nbsp;depth&nbsp;&nbsp;<input type='text' onkeyup='setfilters(this.id);' maxlength='4' style='font-weight: bold; overflow: hidden; max-width: 6ch;text-align:center;' id='fsize3' name='fsize3' value='<?php echo $fsizes[2] ?>'>
+            <td class="<?php echo $TDstyle ?>">width&nbsp;&nbsp;<input type='text' onkeyup='setfilters(this.id);' maxlength='4' style='top:100px;font-weight: bold; overflow: hidden; max-width: 6ch;text-align:center;' id='fsize1' name='fsize1' value='<?php echo $fsizes[0] ?>'>&nbsp;height&nbsp;&nbsp;<input type='text' onkeyup='setfilters(this.id);' onfocus="$(this).select();" maxlength='4' style='font-weight: bold; overflow: hidden; max-width: 6ch;text-align:center;' id='fsize2' name='fsize2' value='<?php echo $fsizes[1] ?>'>&nbsp;depth&nbsp;&nbsp;<input type='text' onkeyup='setfilters(this.id);' maxlength='4' style='font-weight: bold; overflow: hidden; max-width: 6ch;text-align:center;' id='fsize3' name='fsize3' value='<?php echo $fsizes[2] ?>'>
             <br><div style="font-size:.5em;color:red;">Input smaller dimension first i.e. 20X24X1 not 24X20X1</div></td></tr>
          
         <tr><td class="<?php echo $TDstyle ?>">This Filter Size</td><td class="<?php echo $TDstyle ?>"><input type='text'id="filtersize" class="form-control" style='font-weight: bold; width: 300px;' id='filter_size' name='filter_size' value='<?php if($FilterSize != " x x "){echo $FilterSize;} ?>'  readonly></td></tr>
@@ -235,7 +235,8 @@ if(strlen($FilterSize) > 0){$fsizes = explode("x", $FilterSize);}
                         }
                 
             ?>
-            </select>&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn-success" href="ManageFilterTypes.php"><button type="button" class="btn btn-success .text-white">Manage filter types</butten></a>
+            </select>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="ManageFilterTypes.php" class="btn btn-success text-white" style="text-align: center;">Manage filter types</a>
       </ul>
     </div>
   </div>
@@ -244,6 +245,8 @@ if(strlen($FilterSize) > 0){$fsizes = explode("x", $FilterSize);}
 <tr><td>Total in stock</td><td><input type="text" class="form-control" style='font-weight: bold; width: 300px;' cols="2" name="filter_count"></td></tr>
 <tr><td>Part Number <div style="color:red;font-size:.5em;">(optional)</div></td><td><input type="text" class="form-control" style='font-weight: bold; width: 300px;' name="pn"></td></tr>
 <tr><td>Par</td><td> <input type="text" class="form-control" style='font-weight: bold; width: 300px;' name="par"></td>
+<tr><td>Notes</td><td><textarea class="form-control" style='font-weight: bold; width: 300px;' name="notes"></textarea></td>
+<tr>
 <tr><td>Storage Locations</td><td><select class="form-select" aria-label="Default select example" name="storage[]" id="slctStorage" multiple>
              <?php
             $arLocations = arrayFromDataJson("storage", "location");
@@ -253,12 +256,14 @@ if(strlen($FilterSize) > 0){$fsizes = explode("x", $FilterSize);}
                         }
                 
             ?>
-            </select>&nbsp;&nbsp;<a href="ManageStorage.php"><button class="btn btn-primary>Manage storage locations</button></a></td>
+            </select>&nbsp;&nbsp;<a href="ManageStorage.php" class="btn btn-success text-white" style="text-align: center;">Manage filter storage</a>
+          </td>
 </tr>
 <tr><td>Notes</td><td><textarea class="form-control" rows="4" cols="20" id="notes" style='font-weight: bold; width: 300px;' maxlength ="50" name="notes"></textarea></td></tr>
 <tr><td></td><td><input type="hidden" name="action" value="addfilter"></form><button class="btn-success" id="btnsubmit" onclick="validateForm();">Submit</button></td></tr>
     </table>
-<div id="snackbar">Some text some message..</div>
+    <button onclick="document.getElementById('divSnackBar').className='snackbar show';">Show Snackbar</button>
+<div id="divSnackBar" class="snackbar">Some text message..</div>
 <?php
 echo "<textarea  style='width:0px;hieght:0px;' id='txtData-json'>";
 $jsonData = file_get_contents('sites/'.$_SESSION["backup_folder"] . '/data.json');

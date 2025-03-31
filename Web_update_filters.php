@@ -759,7 +759,7 @@ if(strcmp($Action,"delete_filter")==0)
 }
    ?>
 <input type="text" id="txtholdsize" style="display:none;"><input type="text" id="txtholdtype" style="display:none;">
- <table style="width:100%;margin-left:0px;table-layout:fixed;">
+<table style="width:100%;margin-left:0px;table-layout:fixed;">
    <tr id="header">
     <th>Edit</th>
    <th>P/N</th>

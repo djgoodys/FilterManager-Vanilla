@@ -5963,18 +5963,11 @@
     ],
     "misc": [
         {
-            "_id": 1,
-            "order_date": "2024-02-04",
-            "order_array": "[{\"qty\":\"251\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"24x24x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"24\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"29x29x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"98\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"20x24x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"83\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"20x20x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"159\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"16x25x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"1\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"16x20x1 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"80\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"12x24x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"48\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"12x25x1 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"232\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"24x24x12 Extended 12 inch\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"2\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"10x20x1 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"144\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"20x24x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"92\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"24x24x2 Extended 2 inch\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"49\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"12x24x2 Extended 2 inch\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"38\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"16x16x2 Paper\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":\"20\",\"uom\":\"each\",\"partnumber\":\"\",\"description\":\"16x20x2 Extended 12 inch\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":null,\"uom\":\"\",\"partnumber\":\"\",\"description\":\"\",\"priceeach\":\"\",\"totalprice\":\"\"},{\"qty\":null,\"uom\":null,\"partnumber\":null,\"description\":null,\"priceeach\":null,\"totalprice\":null}]",
-            "shoparea": "",
-            "requested_by": "",
-            "cer": "",
-            "sole_vender": "no",
-            "suggested_vender": "",
-            "quote_number": "",
-            "need_by_date": "",
-            "company_name": "Mirage Hotel & Casino"
+      "company_name":"Hard Rock",
+      "company_image":"guilar.jpb",
+      "last_backup":"12-14-1964"
         }
+
     ],
     "parts": [
         {

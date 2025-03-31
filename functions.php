@@ -24,26 +24,28 @@
 $Theme="Light-tdPlain";
 if(isset($_SESSION["theme"])){$Theme = $_SESSION["theme"];}
 
-
 function UpdateUserSettings($columnName, $value, $uname)
-{
-global $con;
-   if ($con->connect_error) 
-      {
-         die("Connection failed: " . $con->connect_error);
-       } 
-   
-    $sql = "UPDATE users SET ".$columnName."='" . $value . "' WHERE user_name='" . $uname . "';";
-    
-   if ($con->query($sql) === TRUE) 
-      {
-        $_SESSION[$columnName] = $value;
-        //echo "colname=".$columnName ." _SESSION[".$columnName."] =". $value. "<br>";
-      } 
-      else 
-      {
-         echo "Error updating user setting: ".$columnName. " error: " . $con->error;
+   {
+      $jsonData = file_get_contents("table_users.json");
+      $data = json_decode($jsonData, true);
+      foreach ($data as &$user) {
+         //echo "uname=".$user["user_name"];
+         if (isset($user["user_name"]) && $user["user_name"] == $uname) {
+            switch($columnName){
+            case "font_size": 
+               $user['font_size'] = $value; 
+            break; 
+            case "font_family": 
+               $user['font_family'] = $value; 
+            break; 
+            }
       }
+}
+
+$updatedJsonData = json_encode($data, JSON_PRETTY_PRINT);
+file_put_contents("table_users.json", $updatedJsonData);
+
+ 
 }
 function setVariable($key, $value){
   echo "<input type='text' name='$key' value='$value' id='$key' style='display:none';>";

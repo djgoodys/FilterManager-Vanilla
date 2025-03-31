@@ -5,14 +5,15 @@
         "password": "relays",
         "field2": "Location",
         "field3": "Filter Size",
-        "Email": "Djgoodys@gmail.com",
+        "Email": "dj@gmail.com",
         "admin": "yes",
-        "font_family": "Franklin Gothic Medium",
-        "font_size": "15",
+        "font_family": "Verdana, sans-serif",
+        "font_size": "20",
         "theme": "Light-tdPlain",
         "backup_folder": "hard_rock",
         "Field3": "Location",
-        "Field2": "Area Served",
+        "Field2": "Last Changed",
+        "clickme": "false",
         "didYouKnow": [
             "dont_show",
             "dont_show",
@@ -28,9 +29,9 @@
     },
     {
         "_id": 1,
-        "user_name": "",
+        "user_name": "rc",
         "password": "relays",
-        "Email": "djgoodys@gmail.com",
+        "Email": "rcs@gmail.com",
         "admin": "yes",
         "field2": "",
         "field3": "",
@@ -57,5 +58,60 @@
         "misc": {
             "checkout_session_id": ""
         }
+    },
+    {
+        "_id": 3,
+        "user_name": "dh",
+        "password": "relays",
+        "Email": "djgoodys@gmail.com",
+        "admin": "yes",
+        "clickme": "true",
+        "field2": "",
+        "field3": "",
+        "didYouKnow": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "font_family": "",
+        "font_size": "",
+        "theme": "",
+        "backup_folder": "umc",
+        "misc": {
+            "checkout_session_id": ""
+        }
+    },
+    {
+        "_id": 4,
+        "user_name": "test",
+        "password": "rr",
+        "Email": "tester@email.com",
+        "admin": "no",
+        "field2": "",
+        "field3": "",
+        "font_family": "",
+        "font_size": "",
+        "theme": "",
+        "backup_folder": "umc",
+        "clickme": "false",
+        "didYouKnow": [
+            "dont_show",
+            "dont_show",
+            "dont_show",
+            "dont_show",
+            "dont_show",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
     }
 ]

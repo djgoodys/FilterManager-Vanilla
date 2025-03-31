@@ -56,7 +56,7 @@ border-radius:5px;
 //print_r($_POST);
 //print_r($_GET);
 $RowID ="";
-$Action = "";
+$Action = "addLocation";
 $Trackable = "";
 $Location = "";
 if(isset($_POST["location"])){$Location = $_POST["location"];}
@@ -114,7 +114,7 @@ if(strcmp($Action, "update")==0)
 if($Action == "addLocation"){
     ?>
 <table border="3;3" class="table-success" style="width:50%;margin-left: auto; margin-right: auto;">
-    <th>Fill in fields then click the add button</th>
+    <th>Fill in a storage name in the field below then click the add button</th>
 <form method="POST" name="frmAddLocation" action="<?php echo $_SERVER['SCRIPT_NAME'] ?>">
     <input type="hidden" name="Action" value="add_location">
 <tr class="p-3 mb-2 bg-success text-white"></tr>
@@ -161,7 +161,7 @@ $newItem = [
 $StorageArray[] = $newItem;
 $updatedJson = json_encode($data, JSON_PRETTY_PRINT);
 if (file_put_contents("sites/".$_SESSION["backup_folder"]."/data.json", $updatedJson)) {
-    echo "<div style='text-align:center;background-color:black;color:aqua;'>New filter storage location added successfully!</div>";
+    echo "<div style='text-align:center;background-color:black;color:aqua;'>New filter storage location added successfully!<span style='margin-left:10px'> <a href='". $_SERVER["SCRIPT_NAME"] ."'>Click here to add more storage locations</span></div>";
 } else {
     echo "<div style='text-align:center;background-color:black;color:red;'>Failed to save the updated JSON file.</div>";
 }
@@ -180,7 +180,7 @@ echo "<div style='text-align:center;background-color:black;color:red;'>".$Locati
             $jsonString = file_get_contents("sites/".$_SESSION["backup_folder"]."/data.json");
             $data = json_decode($jsonString, true);
             $LocationsArray = $data["storage"];
-            if(count($LocationsArray)==0){echo "<div style='width:50%;margin-left:auto;margin-right:auto;background-color:red;color:white;'>There are no filter types in your database. Examples: Paper, Plastic, Extened Use, Washable, etc...You can create any name you wish. Select if you want type tracked for inventory or not. Then click add button.</div>" ;}
+            if(count($LocationsArray)==0){echo "<div style='width:50%;margin-left:auto;margin-right:auto;background-color:red;color:white;'>Currently there is no filter storage locations in your database. You can create them now. There is no limit to how many storage locations you create. Storage name examples: Storage rm #1, Mezz storage rm, etc...You can create any name you wish.</div>" ;}
             //$row = $LocationsArray;
              foreach($LocationsArray as $row)
                 {

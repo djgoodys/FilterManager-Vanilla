@@ -46,11 +46,26 @@ if (isset($_COOKIE["cookie_username"])) {
    $arUsers = [];
    if(is_array($data)){
    foreach ($data as $obj) {
-      if($obj["backup_folder"] == $_SESSION["backup_folder"]){
+      if(isset($obj["backup_folder"]) && $obj["backup_folder"] == $_SESSION["backup_folder"]){
       $arUsers[] = $obj["user_name"];
    }
    }
    }
+
+   $equipment = [];
+   $jsonString = file_get_contents('sites/'.$_SESSION["backup_folder"].'/data.json');
+$data = json_decode($jsonString, true);
+foreach ($data["equipment"] as $unit) {
+    foreach ($searchFields as $field) {
+      //echo "filed=".$field. " SearchWords=".$SearchWords;
+      if($SearchWords != ""){
+        if (strpos(strtolower($unit[$field]), strtolower($SearchWords)) !== false) {
+            $equipment[] = $unit;
+            break; 
+        }
+      }
+    }
+}
 
  function ChangeUserSettings($Field, $Value)
 {
@@ -203,8 +218,7 @@ if(strcmp($Action, "unitdone")==0)
                 $object["assigned_to"] = "";
             	}
 }
-$jsonString = json_encode($data, JSON_PRETTY_PRINT);
-file_put_contents('sites/'.$_SESSION["backup_folder"].'/data.json', $jsonString);
+
 }
 
 //CREATE AN ARRAY OF FILTER TYPES
@@ -706,8 +720,8 @@ function getLineNumber() {
     <tr style="top:0px;position:sticky;z-index:4;" id="tableheader">
         <th style="background-color:#07ff10;color:black;text-align:center;">Add<br>Task</th>
         <th style="background-color:#07ff10;color:black;text-align:center;">Filters<br>Done</th>
-        <th style="background-color:#07ff10;color:black;" >Unit Name
-         <?php if(isset($_SESSION["clickme"]) && $_SESSION["clickme"] == "true"){
+        <th style="background-color:#07ff10;color:black;" >Unit Name<?php echo $_SESSION["clickme"] ?>
+         <?php if(isset($_SESSION["clickme"]) && $_SESSION["clickme"] == "true" && count($equipment) > 0){
          ?>
          <div id="divClickMe">Click me<br><label for="ckUnitName" style="color:red">don"t show</label><input type="checkbox" id="ckUnitName" style="display:inline-block; margin-left:5px" onchange="clickme();document.getElementById('divClickMe').style.display='none';">
          </div>
@@ -796,18 +810,7 @@ $searchFields = [
     "assigned_to",
     "image"
 ];
-$equipment = [];
-foreach ($data["equipment"] as $unit) {
-    foreach ($searchFields as $field) {
-      //echo "filed=".$field. " SearchWords=".$SearchWords;
-      if($SearchWords != ""){
-        if (strpos(strtolower($unit[$field]), strtolower($SearchWords)) !== false) {
-            $equipment[] = $unit;
-            break; 
-        }
-      }
-    }
-}
+
    }
 
 $Id="";
@@ -1082,11 +1085,11 @@ if(count($equipment) > 0)
                 </tr>
 
             <?php
- }
+      }
    }
    else
    {
-      echo "<div style='width:100%;background-color:green;color:white;'>You currently have no units in your database. click <a href='webAddUnit.php'>HERE</a> to start in putting data for your air conditioning units and there filter change times.</div>";
+      echo "<div style='width:100%;background-color:green;color:white;'>You currently have no units in your database. click <a href='filters_initial_setup.php'><span style='background-color:black;color:white'>HERE</span></a> to start in putting data for your air conditioning units and there filter change times.</div>";
    }
      ?>
   
@@ -1404,7 +1407,6 @@ function setCookie2(cookiename, cookievalue){
 </script>
 <script>
   function clickme(){
-      console.log("clickme");
       const xhr = new XMLHttpRequest();
       const url = "clickme.php";
 

@@ -5,7 +5,7 @@ if(session_id() == ''){
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-include('dbMirage_connect.php');
+
 ?>
 <html>
     <title>Filter Manager- change password</title>
@@ -84,7 +84,7 @@ if($Action === "update_password"){
          $jsonString = file_get_contents("table_users.json");
           $data = json_decode($jsonString, true);
           foreach ($data as &$object) {
-              if ($object['user_name'] === $_SESSION["user_name"]) {
+              if (isset($object['user_name']) && $object['user_name'] === $_SESSION["user_name"]) {
                   $object['password'] = $NewPassword;
               }
           }
@@ -116,7 +116,7 @@ if(strcmp($Action,"verify_user")==0){
       $jsonString = file_get_contents('table_users.json');
       $data = json_decode($jsonString, true);
       foreach ($data as &$object) {
-         if ($object['user_name'] === $_SESSION["user_name"] && $Password === $object['password']) {
+         if (isset($object['user_name']) && $object['user_name'] === $_SESSION["user_name"] && $Password === $object['password']) {
             $UserVerified = "true";
             $UserEmail = $object['Email'];
          }

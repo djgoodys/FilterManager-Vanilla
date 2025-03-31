@@ -12,11 +12,11 @@ if(isset($_POST["fontsize"])){$Fontsize=$_POST["fontsize"];}
 if($Fontsize == ""){$Fontsize="1";}
 ?>
 <head>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
 
     <meta charset="utf-8"
      name="viewport" content="width=device-width, initial-scale=1">
-    <title>Filters List</title>
+    <title>Print equipment</title>
     <style>
    
     #myTable {

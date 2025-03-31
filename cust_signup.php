@@ -38,6 +38,21 @@ return $maxId;
   $CheckOutSessionID = "";
   $SetupComplete = "";
   if (isset($_POST["action"])){$Action = $_POST["action"];}
+
+
+if (!empty($_GET)) {
+    foreach ($_GET as $key => $value) {
+        // Print each key-value pair to the browser
+        echo htmlspecialchars($key) . ": " . htmlspecialchars($value) . "<br>";
+
+        // Print each key-value pair to the console
+        error_log($key . ": " . $value);
+    }
+} else {
+    echo "No GET variables found.";
+    error_log("No GET variables found.");
+}
+
   if (isset($_GET["session_id"])){$CheckOutSessionID = $_GET["session_id"];}
 
 if(!isset($CheckOutSessionID)){$checkout_sessionID=false;}
@@ -267,13 +282,11 @@ if(getJavaCookie("checkout_session_id").length > 0)
     method: "POST", // Use POST for form data
     body: formData}
  )
-    .then(response => response.text()) // Assuming the server sends a plain text response
+    .then(response => response.text()) 
     .then(data => {
-      // Handle the response from the server
-     document.getElementById("ajax_message").innerText = data; // Log the response to the console for debugging
+     document.getElementById("ajax_message").innerText = data;
 
       if (data == "business name already exists") {
-       //alert("business name already exists. Please try a different name.");
        showError("bname", "business name already exists. Please try a different nam")
       } 
       if(data== "setup_complete") {
@@ -318,7 +331,7 @@ if($Action == ""){
     <tr><td>Your username for access is:</td><td id='tdAppAdminName2'>".$_COOKIE["app_admin_name"] ."</td></tr><tr><td>Your password is:</td><td id='tdPassword2'>". $_COOKIE["app_admin_password"] . "</td></tr></table>
     <div id='divEmail2' style='display:block;text-align:center;width:600px;height:fit-content;'> An email has also been sent to the email provided with this information.<br>If you don't see it in your email in box check your spam box.<br>
     Click <a href='https://www.filtermanager.net'>HERE</a> to log into your app.</div>";}?>
-  <button onclick="deleteAllCookies();" style="display:none;">delete all</button>
+  <button onclick="deleteAllCookies();" style="display:block;">delete all</button>
     <div id="divProcessing" style="display:none;justify-content: center;text-align:center;">Your app is being created now. Please wait a moment...</div><br><img src="images/processing.gif" id="gifProcessing" style="display:none;">
 <table style="margin-left:auto;margin-right:auto;" id="tblSignUp">
   <tr><th>FilterManager.net - Sign Up</th><th><p id="pErrorMessage" style="display:none;font-size:.75em;color:red;">Username already exists. Please choose a different one.<p></th></tr>
@@ -334,7 +347,7 @@ if($Action == ""){
     <td>Password</td><td><input type="password" name="app_admin_password" id="app_admin_password" onkeyup="validateForm('password');"  required></td><tr><td></td><td></td></tr>
     <tr><th>Contact Information</th><th></th></tr>
     <tr><td>Email address:</td><td><input type="text" name="email" value="<?php echo $Email ?>" id="email" onkeyup="validateForm('email');" required></td></tr><tr><td></td><td><button type='button' id='btnSignUp' onclick="if(getJavaCookie('Subscription_done')==''){FinishSetup();}else{alert('Subscription already set');}" disabled>Next</button></td></tr>
-  </form></table><div id="ajax_message" style="display:none;"></div>
+  </form></table><div id="ajax_message" style="display:block;"></div>
 
   <div style="background-green: black;color:white;font-size;2em;display:none;justify-content:center;text-align:center;" id="divSetup_complete">Account setup complete.<br>Very important:Copy the following information down and store for you records. </div>
     <table id="tblSetup_complete" style="display:none;border-collapse: collapse;color:green;"><tr style="border: 1px solid aqua"><td>Your FilterManager app address is: </td><td>filtermanager.net

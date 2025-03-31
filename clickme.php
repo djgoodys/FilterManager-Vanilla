@@ -19,6 +19,6 @@ if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_N
 
   $jsonData = json_encode($data, JSON_PRETTY_PRINT); 
   file_put_contents($fileName, $jsonData);
-
+          $_SESSION["clickme"] = "false";
 
 ?>
